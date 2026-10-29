@@ -435,12 +435,21 @@
                             <label>Descrição:</label>
                             <textarea id="novo-descricao" rows="2" placeholder="Ingredientes..."></textarea>
                         </div>
+
+                        <!-- OTIMIZADOR AUTOMÁTICO DE IMAGENS -->
+                        <div class="campo" style="background: #1a1a1a; padding: 12px; border-radius: 6px; border: 1px dashed #f28c28; margin-bottom: 15px;">
+                            <label style="color: #f28c28; margin-bottom: 4px; font-size: 13px;">⚡ Otimizador Automático de Foto:</label>
+                            <input type="file" id="input-arquivo-foto" accept="image/*" style="margin-bottom: 8px; font-size: 12px; padding: 4px;">
+                            <p id="status-otimizacao" style="font-size: 11px; color: #aaa; margin: 0 0 6px 0;">Escolha uma foto do telemóvel para reduzir o tamanho e otimizar para o site.</p>
+                            <a id="link-download-otimizado" style="display:none; background:#22c55e; color:#fff; padding:6px 10px; border-radius:4px; text-decoration:none; font-size:12px; text-align:center; font-weight:bold;">📥 Baixar Imagem Otimizada</a>
+                        </div>
+
                         <div class="campo">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                                <label style="margin-bottom: 0;">Imagem PNG (Caminho):</label>
+                                <label style="margin-bottom: 0;">Imagem PNG/JPG (Caminho):</label>
                                 <button type="button" id="btn-ajuda-img" style="width: 24px; height: 24px; padding: 0; font-size: 12px; background: #3b82f6; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold;">?</button>
                             </div>
-                            <input type="text" id="novo-imagem" placeholder="Ex: imagens/nome-foto.png" value="../imagens/">
+                            <input type="text" id="novo-imagem" placeholder="Ex: imagens/nome-foto.jpg" value="../imagens/">
                         </div>
                         <button id="btn-salvar-produto" type="button">Cadastrar Produto</button>
                         <button id="btn-cancelar-edicao" type="button" style="background: #555; margin-top: 8px; display: none;">Cancelar Edição</button>
@@ -493,26 +502,27 @@
             <button type="button" id="fechar-ajuda-img" class="btn-fechar-ajuda">✕</button>
             <h3 style="color: #f28c28; margin-top: 0;">💡 Como adicionar imagens?</h3>
             <p style="font-size: 14px; line-height: 1.5; color: #ccc;">
-                Como o site está hospedado no GitHub Pages, os ficheiros de imagem devem ser colocados diretamente na pasta <b>imagens/</b> da raiz.
+                Como o site está hospedado no GitHub/Vercel, os ficheiros de imagem devem ser colocados diretamente na pasta <b>imagens/</b> da raiz.
             </p>
             <p style="font-size: 14px; line-height: 1.5; color: #ccc;">
                 <b>Passo a passo:</b><br>
-                1. Faça o upload da sua imagem PNG para a pasta <code>imagens/</code> no GitHub.<br>
-                2. No campo de imagem do painel, digite o caminho exato:<br>
-                <code>../imagens/nome-da-foto.png</code>
+                1. Use o otimizador automático acima para reduzir a foto do telemóvel.<br>
+                2. Faça o upload do ficheiro gerado para a pasta <code>imagens/</code> no repositório.<br>
+                3. O caminho fica preenchido automaticamente como: <code>imagens/nome.jpg</code>
             </p>
         </div>
     </div>
 
     <!-- LÓGICA DE INSTALAÇÃO (PWA) E BANNER RESPONSIVO -->
     <script>
-        // Alternar automaticamente entre banner mobile e pc na imagem visível do telemóvel
         const bgImg = document.getElementById('bg-login-img');
         function ajustarBannerLogin() {
-            if (window.innerWidth <= 768) {
-                bgImg.src = '../imagens/banner-mobile.jpg';
-            } else {
-                bgImg.src = '../imagens/banner.jpg';
+            if (bgImg) {
+                if (window.innerWidth <= 768) {
+                    bgImg.src = '../imagens/banner-mobile.jpg';
+                } else {
+                    bgImg.src = '../imagens/banner.jpg';
+                }
             }
         }
         ajustarBannerLogin();
@@ -528,24 +538,34 @@
 
         let deferredPrompt;
         const btnInstalar = document.getElementById('btn-instalar');
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.navigator.standalone;
+
+        if (isIOS && btnInstalar) {
+            btnInstalar.style.display = 'block';
+            btnInstalar.addEventListener('click', () => {
+                alert("📱 Como instalar no iPhone:\n\n1. Toque no botão de partilha ⎋ (na barra do Safari).\n2. Role para baixo e selecione 'Adicionar ao Ecrã Principal'.");
+            });
+        }
 
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            btnInstalar.style.display = 'block';
+            if (btnInstalar && !isIOS) btnInstalar.style.display = 'block';
         });
 
-        btnInstalar.addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                deferredPrompt = null;
-                btnInstalar.style.display = 'none';
-            }
-        });
+        if (btnInstalar && !isIOS) {
+            btnInstalar.addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    deferredPrompt = null;
+                    btnInstalar.style.display = 'none';
+                }
+            });
+        }
 
         window.addEventListener('appinstalled', () => {
-            btnInstalar.style.display = 'none';
+            if (btnInstalar) btnInstalar.style.display = 'none';
         });
     </script>
 
@@ -647,20 +667,101 @@
             await signOut(auth);
         });
 
-        auth.onAuthStateChanged((user) => {
+        // VERIFICAÇÃO SEGURA DE AUTENTICAÇÃO E WHITELIST
+        auth.onAuthStateChanged(async (user) => {
             if (user) {
-                telaLogin.style.display = "none";
-                containerPrincipal.style.background = "#1e1e1e";
-                painelControle.style.display = "block";
-                carregarDadosLoja();
-                carregarProdutosAdmin();
-                carregarAdicionaisAdmin();
+                const emailUtilizador = user.email.toLowerCase();
+                try {
+                    const docRef = doc(db, "configuracoes", "loja");
+                    const docSnap = await getDoc(docRef);
+
+                    let emailsPermitidos = ["cristianst3@gmail.com"];
+                    if (docSnap.exists() && docSnap.data().emailsPermitidos) {
+                        emailsPermitidos = docSnap.data().emailsPermitidos.map(e => e.toLowerCase());
+                    }
+
+                    if (emailsPermitidos.includes(emailUtilizador)) {
+                        telaLogin.style.display = "none";
+                        containerPrincipal.style.background = "#1e1e1e";
+                        painelControle.style.display = "block";
+                        carregarDadosLoja();
+                        carregarProdutosAdmin();
+                        carregarAdicionaisAdmin();
+                    } else {
+                        await signOut(auth);
+                        telaLogin.style.display = "flex";
+                        containerPrincipal.style.background = "transparent";
+                        painelControle.style.display = "none";
+                        erroLogin.textContent = "Acesso negado: Este e-mail não tem autorização para aceder ao painel.";
+                    }
+                } catch (e) {
+                    console.error("Erro ao validar whitelist:", e);
+                    await signOut(auth);
+                    telaLogin.style.display = "flex";
+                    containerPrincipal.style.background = "transparent";
+                    painelControle.style.display = "none";
+                }
             } else {
                 telaLogin.style.display = "flex";
                 containerPrincipal.style.background = "transparent";
                 painelControle.style.display = "none";
             }
         });
+
+        // OTIMIZADOR AUTOMÁTICO DE IMAGENS VIA CANVAS
+        const inputArquivoFoto = document.getElementById("input-arquivo-foto");
+        const statusOtimizacao = document.getElementById("status-otimizacao");
+        const linkDownloadOtimizado = document.getElementById("link-download-otimizado");
+        const novoImagem = document.getElementById("novo-imagem");
+
+        if (inputArquivoFoto) {
+            inputArquivoFoto.addEventListener("change", function(e) {
+                const ficheiro = e.target.files[0];
+                if (!ficheiro) return;
+
+                statusOtimizacao.textContent = "A otimizar imagem...";
+                statusOtimizacao.style.color = "#f28c28";
+
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement("canvas");
+                        let largura = img.width;
+                        let altura = img.height;
+
+                        const larguraMaxima = 800; // Tamanho ideal para web
+                        if (largura > larguraMaxima) {
+                            altura = Math.round((altura * larguraMaxima) / largura);
+                            largura = larguraMaxima;
+                        }
+
+                        canvas.width = largura;
+                        canvas.height = altura;
+
+                        const ctx = canvas.getContext("2d");
+                        ctx.drawImage(img, 0, 0, largura, altura);
+
+                        canvas.toBlob(function(blob) {
+                            const nomeOriginal = ficheiro.name.replace(/\.[^/.]+$/, "").toLowerCase().replace(/[^a-z0-9]/g, "-");
+                            const nomeFicheiroOtimizado = `${nomeOriginal}.jpg`;
+
+                            const urlBlob = URL.createObjectURL(blob);
+                            linkDownloadOtimizado.href = urlBlob;
+                            linkDownloadOtimizado.download = nomeFicheiroOtimizado;
+                            linkDownloadOtimizado.style.display = "block";
+
+                            novoImagem.value = `imagens/${nomeFicheiroOtimizado}`;
+
+                            statusOtimizacao.textContent = `✅ Imagem pronta! Baixe o ficheiro abaixo e coloque-o na pasta imagens/.`;
+                            statusOtimizacao.style.color = "#4ade80";
+                        }, "image/jpeg", 0.8);
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(ficheiro);
+            });
+        }
 
         // Carregar Configurações da Loja
         function carregarDadosLoja() {
@@ -727,7 +828,6 @@
         const novoCategoria = document.getElementById("novo-categoria");
         const novoPreco = document.getElementById("novo-preco");
         const novoDescricao = document.getElementById("novo-descricao");
-        const novoImagem = document.getElementById("novo-imagem");
         const btnSalvarProduto = document.getElementById("btn-salvar-produto");
         const editId = document.getElementById("edit-id");
 
@@ -810,6 +910,9 @@
             novoPreco.value = "";
             novoDescricao.value = "";
             novoImagem.value = "../imagens/";
+            if(inputArquivoFoto) inputArquivoFoto.value = "";
+            if(linkDownloadOtimizado) linkDownloadOtimizado.style.display = "none";
+            if(statusOtimizacao) statusOtimizacao.textContent = "Escolha uma foto do telemóvel para reduzir o tamanho e otimizar para o site.";
             btnSalvarProduto.textContent = "Cadastrar Produto";
             btnCancelarEdicao.style.display = "none";
             tituloFormProduto.textContent = "➕ Adicionar Novo Produto";
@@ -1095,7 +1198,7 @@
             setTimeout(() => { msgSucesso.textContent = ""; }, 4000);
         }
 
-        // Lógica de Login com a Google e Validação da Whitelist do Firestore
+        // Lógica de Login com a Google
         const btnLoginGoogle = document.getElementById("btn-login-google");
         const googleProvider = new GoogleAuthProvider();
 
@@ -1103,24 +1206,7 @@
             btnLoginGoogle.addEventListener("click", async () => {
                 erroLogin.textContent = "";
                 try {
-                    const resultado = await signInWithPopup(auth, googleProvider);
-                    const emailUtilizador = resultado.user.email.toLowerCase();
-
-                    const docRef = doc(db, "configuracoes", "loja");
-                    const docSnap = await getDoc(docRef);
-
-                    let emailsPermitidos = [];
-                    if (docSnap.exists() && docSnap.data().emailsPermitidos) {
-                        emailsPermitidos = docSnap.data().emailsPermitidos.map(e => e.toLowerCase());
-                    } else {
-                        emailsPermitidos = ["cristianst3@gmail.com"]; 
-                    }
-
-                    if (!emailsPermitidos.includes(emailUtilizador)) {
-                        await signOut(auth);
-                        erroLogin.textContent = "Acesso negado: Este e-mail não tem autorização para aceder ao painel.";
-                        return;
-                    }
+                    await signInWithPopup(auth, googleProvider);
                 } catch (error) {
                     console.error("Erro no login Google:", error);
                     erroLogin.textContent = "Erro ao autenticar com a Google: " + error.message;
