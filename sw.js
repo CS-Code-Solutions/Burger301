@@ -1,4 +1,4 @@
-const CACHE_NAME = 'burger301-v1';
+const CACHE_NAME = 'burger301-v2';
 const arquivosParaCache = [
     './',
     './index.html',
