@@ -875,7 +875,7 @@ body {
     .banner-hero {
         min-height: 610px; /* Altura maximizada para o limite do banner */
         padding: 4px 16px;
-        background-image: url("imagens/gta.png");
+        background-image: url("imagens/banner-mobile.jpg");
         background-size: cover;
         background-position: center top;
         display: flex;
