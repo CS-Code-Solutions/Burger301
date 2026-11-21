@@ -38,20 +38,38 @@ let listaPromocoesAtivas = [];
 
 let listaProdutosCache = [];
 
-// Aplica dinamicamente o tema de Banner Mobile escolhido no Admin
+// Aplica dinamicamente o tema de Banner Mobile escolhido no Admin e adapta a proporção na tela
 function aplicarBannerMobileDinamico(imagemBanner) {
-    let estiloTag = document.getElementById("estilo-banner-mobile-dinamico");
-    if (!imagemBanner) {
-        if (estiloTag) estiloTag.remove();
-        return;
-    }
-    if (!estiloTag) {
-        estiloTag = document.createElement("style");
-        estiloTag.id = "estilo-banner-mobile-dinamico";
-        document.head.appendChild(estiloTag);
-    }
-    estiloTag.textContent = `@media (max-width: 768px) { .banner-hero { background-image: url("${imagemBanner}") !important; } }`;
+    const srcFinal = imagemBanner || "imagens/gta.png";
+    const imgTemp = new Image();
+
+    imgTemp.onload = () => {
+        let estiloTag = document.getElementById("estilo-banner-mobile-dinamico");
+        if (!estiloTag) {
+            estiloTag = document.createElement("style");
+            estiloTag.id = "estilo-banner-mobile-dinamico";
+            document.head.appendChild(estiloTag);
+        }
+
+        const bgRule = imagemBanner ? `background-image: url("${imagemBanner}") !important;` : "";
+        estiloTag.textContent = `@media (max-width: 768px) { .banner-hero { ${bgRule} aspect-ratio: ${imgTemp.naturalWidth} / ${imgTemp.naturalHeight} !important; } }`;
+    };
+
+    imgTemp.onerror = () => {
+        if (imagemBanner) {
+            let estiloTag = document.getElementById("estilo-banner-mobile-dinamico");
+            if (!estiloTag) {
+                estiloTag = document.createElement("style");
+                estiloTag.id = "estilo-banner-mobile-dinamico";
+                document.head.appendChild(estiloTag);
+            }
+            estiloTag.textContent = `@media (max-width: 768px) { .banner-hero { background-image: url("${imagemBanner}") !important; } }`;
+        }
+    };
+
+    imgTemp.src = srcFinal;
 }
+aplicarBannerMobileDinamico("");
 
 // Lista de produtos padrão garantida (fallback)
 const produtosPadraoSeguro = [
