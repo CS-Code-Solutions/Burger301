@@ -38,6 +38,21 @@ let listaPromocoesAtivas = [];
 
 let listaProdutosCache = [];
 
+// Aplica dinamicamente o tema de Banner Mobile escolhido no Admin
+function aplicarBannerMobileDinamico(imagemBanner) {
+    let estiloTag = document.getElementById("estilo-banner-mobile-dinamico");
+    if (!imagemBanner) {
+        if (estiloTag) estiloTag.remove();
+        return;
+    }
+    if (!estiloTag) {
+        estiloTag = document.createElement("style");
+        estiloTag.id = "estilo-banner-mobile-dinamico";
+        document.head.appendChild(estiloTag);
+    }
+    estiloTag.textContent = `@media (max-width: 768px) { .banner-hero { background-image: url("${imagemBanner}") !important; } }`;
+}
+
 // Lista de produtos padrão garantida (fallback)
 const produtosPadraoSeguro = [
     {
@@ -122,7 +137,7 @@ const produtosPadraoSeguro = [
     }
 ];
 
-// Ouve o status, WhatsApp e Promoções da loja em tempo real
+// Ouve o status, WhatsApp, Banner Mobile e Promoções da loja em tempo real
 onSnapshot(doc(db, "configuracoes", "loja"), (docSnap) => {
     if (docSnap.exists()) {
         const dados = docSnap.data();
@@ -136,6 +151,7 @@ onSnapshot(doc(db, "configuracoes", "loja"), (docSnap) => {
         }
 
         atualizarStatusHeader();
+        aplicarBannerMobileDinamico(dados.bannerMobileAtivo || "");
         
         listaPromocoesAtivas = dados.promocoes || [];
         renderizarBannersPromocoes();
