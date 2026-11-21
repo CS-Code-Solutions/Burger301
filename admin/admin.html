@@ -46,6 +46,7 @@
             justify-content: center;
             min-height: 100vh;
             box-sizing: border-box;
+            transition: background-color 0.25s, color 0.25s;
         }
 
         /* TELA DE LOGIN - PADRÃO COMPUTADOR (DESKTOP) */
@@ -190,6 +191,7 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.5);
             height: fit-content;
             position: relative;
+            transition: background-color 0.25s, box-shadow 0.25s;
         }
         
         /* BOTÃO DE INSTALAÇÃO DISCRETO */
@@ -210,6 +212,27 @@
         }
         #btn-instalar:hover {
             transform: scale(1.1);
+        }
+
+        /* BOTÃO DE TEMA CLARO / ESCURO */
+        #btn-tema-admin {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            font-size: 16px;
+            cursor: pointer;
+            color: #fff;
+            padding: 5px 9px;
+            border-radius: 8px;
+            transition: transform 0.2s, background-color 0.2s;
+            width: auto;
+            z-index: 10;
+        }
+        #btn-tema-admin:hover {
+            transform: scale(1.06);
+            background: #383838;
         }
 
         h2 { color: #f28c28; text-align: center; margin-bottom: 20px; }
@@ -333,6 +356,166 @@
         }
         .msg { text-align: center; margin-top: 10px; font-size: 14px; color: #4ade80; }
 
+        /* CARDS DE TEMAS DO BANNER MOBILE */
+        .grid-banners-mobile {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 12px;
+            max-height: 360px;
+            overflow-y: auto;
+        }
+        .card-banner-tema {
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: border-color 0.2s, transform 0.15s;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        .card-banner-tema:hover {
+            transform: translateY(-2px);
+            border-color: #f28c28;
+        }
+        .card-banner-tema.ativo {
+            border-color: #22c55e;
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.35);
+        }
+        .card-banner-tema img {
+            width: 100%;
+            height: 130px;
+            object-fit: cover;
+            display: block;
+            background: #111;
+        }
+        .card-banner-info {
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex: 1;
+            justify-content: space-between;
+        }
+        .card-banner-nome {
+            font-size: 12px;
+            font-weight: bold;
+            color: #fff;
+            word-break: break-word;
+        }
+        .badge-banner-status {
+            font-size: 10px;
+            font-weight: bold;
+            padding: 3px 6px;
+            border-radius: 4px;
+            text-align: center;
+            background: #333;
+            color: #ccc;
+        }
+        .card-banner-tema.ativo .badge-banner-status {
+            background: #22c55e;
+            color: #fff;
+        }
+        .btn-excluir-banner {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 26px !important;
+            height: 26px !important;
+            padding: 0 !important;
+            background: rgba(239, 68, 68, 0.9) !important;
+            color: #fff;
+            border-radius: 50%;
+            font-size: 12px !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3;
+        }
+
+        /* =========================================
+           TEMA CLARO DO PAINEL ADMIN
+        ========================================= */
+        body.tema-claro {
+            background-color: #eef0f4;
+            color: #1f2937;
+        }
+        body.tema-claro .container {
+            background: #ffffff !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        body.tema-claro #btn-tema-admin {
+            background: #f3f4f6;
+            border-color: #d1d5db;
+            color: #111827;
+        }
+        body.tema-claro .secao-painel {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+        }
+        body.tema-claro .secao-painel h3 {
+            border-bottom-color: #e2e8f0;
+        }
+        body.tema-claro .status-box,
+        body.tema-claro .item-admin-produto {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            color: #1f2937;
+        }
+        body.tema-claro #container-form-whatsapp,
+        body.tema-claro #container-form-promo,
+        body.tema-claro #container-form-produto,
+        body.tema-claro #container-banner-mobile {
+            background: #f1f5f9 !important;
+            border-color: #cbd5e1 !important;
+        }
+        body.tema-claro #lista-admin-promocoes {
+            background: #ffffff !important;
+            border: 1px solid #e2e8f0;
+        }
+        body.tema-claro input,
+        body.tema-claro select,
+        body.tema-claro textarea {
+            background: #ffffff;
+            border-color: #cbd5e1;
+            color: #111827;
+        }
+        body.tema-claro .btn-modo {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+            color: #475569;
+        }
+        body.tema-claro .btn-modo.ativo {
+            background-color: #f28c28;
+            color: #ffffff;
+            border-color: #f28c28;
+        }
+        body.tema-claro .btn-aba {
+            background: #e2e8f0;
+            color: #475569;
+        }
+        body.tema-claro .btn-aba.ativa {
+            background: #f28c28;
+            color: #ffffff;
+        }
+        body.tema-claro .card-banner-tema {
+            background: #ffffff;
+            border-color: #cbd5e1;
+        }
+        body.tema-claro .card-banner-nome {
+            color: #1f2937;
+        }
+        body.tema-claro .badge-banner-status {
+            background: #e2e8f0;
+            color: #475569;
+        }
+        body.tema-claro .card-banner-tema.ativo .badge-banner-status {
+            background: #22c55e;
+            color: #ffffff;
+        }
+
         #modal-ajuda-img {
             display: none;
             position: fixed;
@@ -410,6 +593,9 @@
 
     <!-- PAINEL DE CONTROLE -->
     <div class="container" id="container-principal">
+        <!-- Botão Tema Claro / Escuro -->
+        <button id="btn-tema-admin" type="button" title="Alternar Tema Claro / Escuro">☀️</button>
+
         <!-- Ícone discreto de instalação -->
         <button id="btn-instalar" title="Instalar Aplicação">📥</button>
 
@@ -443,13 +629,36 @@
                 <button id="btn-toggle-whatsapp" type="button" style="background-color: #3b82f6; margin-bottom: 10px;">📞 Alterar Número do WhatsApp</button>
 
                 <!-- Bloco de edição do WhatsApp oculto por padrão -->
-                <div id="container-form-whatsapp" style="display: none; background: #222; padding: 15px; border-radius: 6px; border: 1px solid #333; margin-top: 10px;">
+                <div id="container-form-whatsapp" style="display: none; background: #222; padding: 15px; border-radius: 6px; border: 1px solid #333; margin-top: 10px; margin-bottom: 10px;">
                     <div class="campo" style="margin-bottom: 5px;">
                         <label>WhatsApp para Pedidos (com DDI e DDD):</label>
                         <input type="text" id="input-whatsapp" placeholder="Ex: 5551999999999">
                     </div>
                     <p style="font-size: 13px; color: #aaa; margin-bottom: 10px;">Número atual cadastrado: <b id="display-whatsapp-atual" style="color: #4ade80;">Carregando...</b></p>
                     <button id="btn-salvar-whatsapp" type="button">Salvar Número do WhatsApp</button>
+                </div>
+
+                <!-- Botão para abrir o Gerenciador de Banner Mobile -->
+                <button id="btn-toggle-banner-mobile" type="button" style="background-color: #8b5cf6; margin-bottom: 5px;">🖼️ Banner Mobile (Temas)</button>
+
+                <!-- Bloco de Temas do Banner Mobile oculto por padrão -->
+                <div id="container-banner-mobile" style="display: none; background: #222; padding: 15px; border-radius: 6px; border: 1px solid #333; margin-top: 10px;">
+                    <div class="campo">
+                        <label>Nome do Tema:</label>
+                        <input type="text" id="input-nome-tema-banner" placeholder="Ex: Especial Sexta, Halloween, Promo...">
+                    </div>
+                    <div class="campo" style="background: rgba(242,140,40,0.08); padding: 10px; border-radius: 6px; border: 1px dashed #f28c28;">
+                        <label style="color: #f28c28; font-size: 13px;">📤 Upload do Banner (Compactação Automática):</label>
+                        <input type="file" id="input-arquivo-banner" accept="image/*" style="font-size: 12px; padding: 4px; margin-bottom: 6px;">
+                        <p id="status-compactacao-banner" style="font-size: 11px; color: #aaa; margin: 0;">Selecione uma imagem vertical para celular.</p>
+                        <img id="preview-novo-banner" alt="Prévia do banner" style="display: none; width: 100%; max-height: 160px; object-fit: cover; border-radius: 6px; margin-top: 8px; border: 1px solid #444;">
+                    </div>
+                    <button id="btn-salvar-tema-banner" type="button" style="background-color: #22c55e;">Salvar Tema de Banner</button>
+
+                    <div style="margin-top: 16px; border-top: 1px solid #333; padding-top: 12px;">
+                        <label style="margin-bottom: 4px;">Toque no tema para aplicar no site:</label>
+                        <div id="lista-banners-mobile" class="grid-banners-mobile"></div>
+                    </div>
                 </div>
             </div>
 
@@ -600,8 +809,33 @@
         </div>
     </div>
 
-    <!-- LÓGICA DE INSTALAÇÃO (PWA) E BANNER RESPONSIVO -->
+    <!-- LÓGICA DE INSTALAÇÃO (PWA), TEMA CLARO/ESCURO E BANNER RESPONSIVO -->
     <script>
+        // Tema Claro / Escuro do Admin
+        const btnTemaAdmin = document.getElementById('btn-tema-admin');
+        const CHAVE_TEMA_ADMIN = 'burger301_admin_tema';
+
+        function aplicarTemaAdmin(tema) {
+            if (tema === 'claro') {
+                document.body.classList.add('tema-claro');
+                if (btnTemaAdmin) btnTemaAdmin.textContent = '🌙';
+            } else {
+                document.body.classList.remove('tema-claro');
+                if (btnTemaAdmin) btnTemaAdmin.textContent = '☀️';
+            }
+        }
+
+        aplicarTemaAdmin(localStorage.getItem(CHAVE_TEMA_ADMIN) || 'escuro');
+
+        if (btnTemaAdmin) {
+            btnTemaAdmin.addEventListener('click', () => {
+                const ehClaro = document.body.classList.contains('tema-claro');
+                const novoTema = ehClaro ? 'escuro' : 'claro';
+                localStorage.setItem(CHAVE_TEMA_ADMIN, novoTema);
+                aplicarTemaAdmin(novoTema);
+            });
+        }
+
         const bgImg = document.getElementById('bg-login-img');
         function ajustarBannerLogin() {
             if (bgImg) {
@@ -1041,6 +1275,7 @@
                 carregarDadosLoja();
                 carregarProdutosAdmin();
                 carregarAdicionaisAdmin();
+                carregarBannersMobileAdmin();
             } else {
                 usuarioAutorizadoAtual = null;
                 sessionStorage.removeItem(CHAVE_SESSAO_DESBLOQUEADA);
@@ -1085,6 +1320,208 @@
                 atualizarEstadoBiometriaUI();
             }
         });
+
+        // =========================================
+        // GERENCIADOR DE BANNER MOBILE (TEMAS)
+        // =========================================
+        const btnToggleBannerMobile = document.getElementById("btn-toggle-banner-mobile");
+        const containerBannerMobile = document.getElementById("container-banner-mobile");
+        const inputNomeTemaBanner = document.getElementById("input-nome-tema-banner");
+        const inputArquivoBanner = document.getElementById("input-arquivo-banner");
+        const statusCompactacaoBanner = document.getElementById("status-compactacao-banner");
+        const previewNovoBanner = document.getElementById("preview-novo-banner");
+        const btnSalvarTemaBanner = document.getElementById("btn-salvar-tema-banner");
+        const listaBannersMobile = document.getElementById("lista-banners-mobile");
+
+        let bannerCompactadoDataUrl = "";
+        let bannerMobileAtivoAtual = "";
+        let bannersMobileSalvosCache = [];
+
+        if (btnToggleBannerMobile && containerBannerMobile) {
+            btnToggleBannerMobile.addEventListener("click", () => {
+                const visivel = containerBannerMobile.style.display === "block";
+                containerBannerMobile.style.display = visivel ? "none" : "block";
+                btnToggleBannerMobile.textContent = visivel ? "🖼️ Banner Mobile (Temas)" : "❌ Fechar Temas de Banner";
+            });
+        }
+
+        if (inputArquivoBanner) {
+            inputArquivoBanner.addEventListener("change", (e) => {
+                const ficheiro = e.target.files[0];
+                if (!ficheiro) return;
+
+                statusCompactacaoBanner.textContent = "Compactando banner...";
+                statusCompactacaoBanner.style.color = "#f28c28";
+
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement("canvas");
+                        let largura = img.width;
+                        let altura = img.height;
+
+                        const larguraMaxima = 750;
+                        if (largura > larguraMaxima) {
+                            altura = Math.round((altura * larguraMaxima) / largura);
+                            largura = larguraMaxima;
+                        }
+
+                        canvas.width = largura;
+                        canvas.height = altura;
+
+                        const ctx = canvas.getContext("2d");
+                        ctx.drawImage(img, 0, 0, largura, altura);
+
+                        let dataUrl = canvas.toDataURL("image/jpeg", 0.75);
+                        if (dataUrl.length > 750000) {
+                            dataUrl = canvas.toDataURL("image/jpeg", 0.55);
+                        }
+
+                        bannerCompactadoDataUrl = dataUrl;
+                        const tamanhoKB = Math.round((dataUrl.length * 3) / 4 / 1024);
+
+                        previewNovoBanner.src = dataUrl;
+                        previewNovoBanner.style.display = "block";
+                        statusCompactacaoBanner.textContent = `✅ Banner compactado (${tamanhoKB} KB). Digite o nome e clique em Salvar.`;
+                        statusCompactacaoBanner.style.color = "#4ade80";
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(ficheiro);
+            });
+        }
+
+        if (btnSalvarTemaBanner) {
+            btnSalvarTemaBanner.addEventListener("click", async () => {
+                const nomeTema = inputNomeTemaBanner.value.trim();
+                if (!nomeTema) {
+                    alert("Digite o nome do tema (Ex: Especial Sexta).");
+                    return;
+                }
+                if (!bannerCompactadoDataUrl) {
+                    alert("Selecione uma imagem para o banner.");
+                    return;
+                }
+
+                btnSalvarTemaBanner.disabled = true;
+                btnSalvarTemaBanner.textContent = "Salvando...";
+
+                try {
+                    await addDoc(collection(db, "banners_mobile"), {
+                        nome: nomeTema,
+                        imagem: bannerCompactadoDataUrl,
+                        criadoEm: Date.now()
+                    });
+
+                    // Já aplica automaticamente o novo tema no site
+                    await updateDoc(doc(db, "configuracoes", "loja"), {
+                        bannerMobileAtivo: bannerCompactadoDataUrl,
+                        bannerMobileNome: nomeTema
+                    });
+
+                    inputNomeTemaBanner.value = "";
+                    inputArquivoBanner.value = "";
+                    bannerCompactadoDataUrl = "";
+                    previewNovoBanner.style.display = "none";
+                    statusCompactacaoBanner.textContent = "Selecione uma imagem vertical para celular.";
+                    statusCompactacaoBanner.style.color = "#aaa";
+                    mostrarMensagem(`Tema "${nomeTema}" salvo e aplicado no site!`);
+                } catch (err) {
+                    console.error("Erro ao salvar tema de banner:", err);
+                    alert("Erro ao salvar banner: " + (err.message || err));
+                } finally {
+                    btnSalvarTemaBanner.disabled = false;
+                    btnSalvarTemaBanner.textContent = "Salvar Tema de Banner";
+                }
+            });
+        }
+
+        function renderizarCardsBannersMobile() {
+            if (!listaBannersMobile) return;
+            listaBannersMobile.innerHTML = "";
+
+            const todosBanners = [
+                {
+                    id: "padrao",
+                    nome: "Padrão (Original)",
+                    imagemSite: "",
+                    imagemThumb: "../imagens/gta.png",
+                    padrao: true
+                },
+                ...bannersMobileSalvosCache.map(b => ({
+                    id: b.id,
+                    nome: b.nome,
+                    imagemSite: b.imagem,
+                    imagemThumb: b.imagem,
+                    padrao: false
+                }))
+            ];
+
+            todosBanners.forEach(item => {
+                const estaAtivo = item.padrao
+                    ? !bannerMobileAtivoAtual
+                    : bannerMobileAtivoAtual === item.imagemSite;
+
+                const card = document.createElement("div");
+                card.className = "card-banner-tema" + (estaAtivo ? " ativo" : "");
+                card.innerHTML = `
+                    ${!item.padrao ? `<button type="button" class="btn-excluir-banner" title="Excluir tema">🗑️</button>` : ""}
+                    <img src="${item.imagemThumb}" alt="${item.nome}">
+                    <div class="card-banner-info">
+                        <span class="card-banner-nome">${item.nome}</span>
+                        <span class="badge-banner-status">${estaAtivo ? "✅ Ativo no Site" : "Selecionar"}</span>
+                    </div>
+                `;
+
+                card.addEventListener("click", async (e) => {
+                    if (e.target.closest(".btn-excluir-banner")) return;
+                    try {
+                        await updateDoc(doc(db, "configuracoes", "loja"), {
+                            bannerMobileAtivo: item.imagemSite,
+                            bannerMobileNome: item.nome
+                        });
+                        mostrarMensagem(`Banner "${item.nome}" ativado no site!`);
+                    } catch (err) {
+                        console.error("Erro ao selecionar banner:", err);
+                    }
+                });
+
+                const btnDel = card.querySelector(".btn-excluir-banner");
+                if (btnDel) {
+                    btnDel.addEventListener("click", async (e) => {
+                        e.stopPropagation();
+                        if (!confirm(`Excluir o tema "${item.nome}"?`)) return;
+                        try {
+                            await deleteDoc(doc(db, "banners_mobile", item.id));
+                            if (estaAtivo) {
+                                await updateDoc(doc(db, "configuracoes", "loja"), {
+                                    bannerMobileAtivo: "",
+                                    bannerMobileNome: "Padrão (Original)"
+                                });
+                            }
+                            mostrarMensagem("Tema de banner removido!");
+                        } catch (err) {
+                            console.error("Erro ao excluir tema de banner:", err);
+                        }
+                    });
+                }
+
+                listaBannersMobile.appendChild(card);
+            });
+        }
+
+        function carregarBannersMobileAdmin() {
+            onSnapshot(collection(db, "banners_mobile"), (snapshot) => {
+                const lista = [];
+                snapshot.forEach(docSnap => {
+                    lista.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                lista.sort((a, b) => (b.criadoEm || 0) - (a.criadoEm || 0));
+                bannersMobileSalvosCache = lista;
+                renderizarCardsBannersMobile();
+            });
+        }
 
         // OTIMIZADOR AUTOMÁTICO DE IMAGENS VIA CANVAS
         const inputArquivoFoto = document.getElementById("input-arquivo-foto");
@@ -1152,6 +1589,9 @@
                         displayWhatsappAtual.textContent = dados.whatsapp;
                         inputWhatsapp.value = dados.whatsapp;
                     }
+
+                    bannerMobileAtivoAtual = dados.bannerMobileAtivo || "";
+                    renderizarCardsBannersMobile();
                 }
             });
         }
