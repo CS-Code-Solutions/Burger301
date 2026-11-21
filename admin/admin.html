@@ -368,7 +368,7 @@
                 <!-- Botão de Login com a Google -->
                 <button type="button" id="btn-login-google" style="background-color: #db4437; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px;">
                     <svg style="width:18px;height:18px" viewBox="0 0 24 24"><path fill="#ffffff" d="M21.35,11.1H12.18V13.83H18.69C18.36,17.64 15.19,19.27 12.19,19.27C8.36,19.27 5,16.25 5,12C5,7.9 8.2,4.73 12.19,4.73C14.07,4.73 15.55,5.37 16.68,6.48L18.7,4.45C17.08,2.97 14.85,2 12.19,2C6.74,2 2.24,6.5 2.24,12C2.24,17.5 6.74,22 12.19,22C17.64,22 21.34,18.15 21.34,12.5C21.34,11.97 21.29,11.53 21.35,11.1Z"/></svg>
-                    Entrar com Conta Google
+                    <span id="texto-btn-google">Entrar com Conta Google</span>
                 </button>
 
                 <!-- Botão de Login por Biometria (Digital / Face ID) -->
@@ -379,7 +379,7 @@
             </div>
 
             <p id="status-biometria-login" class="status-biometria-texto"></p>
-            <p id="erro-login" style="color: #ef4444; text-align: center; margin-top: 10px; font-size: 13px; word-break: break-all;"></p>
+            <p id="erro-login" style="color: #ef4444; text-align: center; margin-top: 10px; font-size: 13px; word-break: break-word;"></p>
             
             <p style="font-size: 0.75rem; color: #ccc; text-align: center; margin-top: 20px; margin-bottom: 4px;">
                 © 2026 Burger 301 Todos os direitos reservados.
@@ -642,7 +642,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
         import { getFirestore, doc, getDoc, updateDoc, collection, getDocs, addDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
-        import { getAuth, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+        import { getAuth, signOut, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBJlQENhh8DbqYLyTl4zwvyqLGRAIMz87Y",
@@ -665,6 +665,8 @@
         const erroLogin = document.getElementById("erro-login");
 
         // Elementos da Biometria (Digital / Face ID)
+        const btnLoginGoogle = document.getElementById("btn-login-google");
+        const textoBtnGoogle = document.getElementById("texto-btn-google");
         const btnLoginBiometria = document.getElementById("btn-login-biometria");
         const statusBiometriaLogin = document.getElementById("status-biometria-login");
         const infoBiometriaPainel = document.getElementById("info-biometria-painel");
@@ -703,6 +705,15 @@
         const btnSair = document.getElementById("btn-sair");
 
         let usuarioAutorizadoAtual = null;
+        let biometriaConfirmadaNaSessao = false;
+
+        // Trata retorno de signInWithRedirect (usado como fallback no iOS PWA)
+        getRedirectResult(auth).catch((error) => {
+            if (error) {
+                console.error("Erro no redirect Google:", error);
+                erroLogin.textContent = "Erro ao concluir login Google: " + error.message;
+            }
+        });
 
         // =========================================
         // ESTRUTURA DE BIOMETRIA (WEBAUTHN / PASSKEY)
@@ -754,6 +765,15 @@
             const suportada = biometriaSuportada();
             const registro = obterRegistroBiometria();
 
+            if (btnLoginGoogle) {
+                btnLoginGoogle.style.backgroundColor = biometriaConfirmadaNaSessao ? "#22c55e" : "#db4437";
+            }
+            if (textoBtnGoogle) {
+                textoBtnGoogle.textContent = biometriaConfirmadaNaSessao
+                    ? "Continuar com Google (Biometria OK)"
+                    : "Entrar com Conta Google";
+            }
+
             if (!suportada) {
                 if (btnLoginBiometria) btnLoginBiometria.style.display = "none";
                 if (statusBiometriaLogin) statusBiometriaLogin.textContent = "Biometria disponível apenas em conexão segura (HTTPS) com suporte WebAuthn.";
@@ -768,9 +788,15 @@
             }
 
             if (statusBiometriaLogin) {
-                statusBiometriaLogin.textContent = registro
-                    ? `Biometria vinculada neste aparelho (${registro.email}).`
-                    : "Entre com Google uma vez e ative a Digital / Face ID nas configurações do painel.";
+                if (biometriaConfirmadaNaSessao && registro) {
+                    statusBiometriaLogin.style.color = "#4ade80";
+                    statusBiometriaLogin.textContent = `✅ Biometria confirmada (${registro.email})! Toque no botão verde acima para abrir sua conta.`;
+                } else {
+                    statusBiometriaLogin.style.color = "#bbb";
+                    statusBiometriaLogin.textContent = registro
+                        ? `Biometria vinculada neste aparelho (${registro.email}).`
+                        : "Entre com Google uma vez e ative a Digital / Face ID nas configurações do painel.";
+                }
             }
 
             if (infoBiometriaPainel) {
@@ -852,6 +878,7 @@
                 return;
             }
 
+            // Passo 1: Apenas valida o Face ID / Digital (sem abrir pop-up após await, que o iPhone bloqueia)
             try {
                 const desafio = crypto.getRandomValues(new Uint8Array(32));
                 const assertion = await navigator.credentials.get({
@@ -870,19 +897,31 @@
                 });
 
                 if (!assertion) return;
+                biometriaConfirmadaNaSessao = true;
+            } catch (err) {
+                console.error("Erro na verificação biométrica:", err);
+                biometriaConfirmadaNaSessao = false;
+                atualizarEstadoBiometriaUI();
+                erroLogin.textContent = "Biometria não confirmada ou cancelada.";
+                return;
+            }
 
-                // Se já houver sessão ativa no Firebase Auth e corresponder ao e-mail vinculado, o listener libera o painel
+            // Passo 2: Biometria já deu OK! Verifica se a sessão Google já está pronta no Firebase
+            try {
+                if (typeof auth.authStateReady === "function") {
+                    await auth.authStateReady();
+                }
+
                 if (auth.currentUser && auth.currentUser.email && auth.currentUser.email.toLowerCase() === registro.email) {
                     await liberarPainelParaUsuario(auth.currentUser);
-                } else {
-                    // Solicita a sessão Google correspondente para autenticar o token Firebase com segurança
-                    const provider = new GoogleAuthProvider();
-                    provider.setCustomParameters({ login_hint: registro.email });
-                    await signInWithPopup(auth, provider);
+                    return;
                 }
+
+                // Se você saiu antes (signOut), pede um toque direto no botão Google para o Safari não bloquear o pop-up
+                atualizarEstadoBiometriaUI();
             } catch (err) {
-                console.error("Erro na autenticação biométrica:", err);
-                erroLogin.textContent = "Biometria não confirmada ou cancelada.";
+                console.error("Erro ao verificar sessão após biometria:", err);
+                atualizarEstadoBiometriaUI();
             }
         }
 
@@ -893,6 +932,7 @@
         if (btnRemoverBiometria) {
             btnRemoverBiometria.addEventListener("click", () => {
                 if (confirm("Remover o login biométrico deste aparelho?")) {
+                    biometriaConfirmadaNaSessao = false;
                     limparRegistroBiometria();
                     mostrarMensagem("Biometria removida deste aparelho.");
                 }
@@ -946,6 +986,7 @@
 
         btnSair.addEventListener("click", async () => {
             usuarioAutorizadoAtual = null;
+            biometriaConfirmadaNaSessao = false;
             await signOut(auth);
         });
 
@@ -961,6 +1002,7 @@
 
             if (emailsPermitidos.includes(emailUtilizador)) {
                 usuarioAutorizadoAtual = user;
+                biometriaConfirmadaNaSessao = false;
                 telaLogin.style.display = "none";
                 containerPrincipal.style.background = "#1e1e1e";
                 painelControle.style.display = "block";
@@ -970,6 +1012,7 @@
                 carregarAdicionaisAdmin();
             } else {
                 usuarioAutorizadoAtual = null;
+                biometriaConfirmadaNaSessao = false;
                 await signOut(auth);
                 telaLogin.style.display = "flex";
                 containerPrincipal.style.background = "transparent";
@@ -1482,17 +1525,25 @@
             setTimeout(() => { msgSucesso.textContent = ""; }, 4000);
         }
 
-        const btnLoginGoogle = document.getElementById("btn-login-google");
         const googleProvider = new GoogleAuthProvider();
 
         if (btnLoginGoogle) {
             btnLoginGoogle.addEventListener("click", async () => {
                 erroLogin.textContent = "";
+                const registro = obterRegistroBiometria();
+                if (registro && registro.email) {
+                    googleProvider.setCustomParameters({ login_hint: registro.email });
+                }
+
                 try {
                     await signInWithPopup(auth, googleProvider);
                 } catch (error) {
                     console.error("Erro no login Google:", error);
-                    erroLogin.textContent = "Erro ao autenticar com a Google: " + error.message;
+                    if (error.code === "auth/popup-blocked" || error.code === "auth/operation-not-supported-in-this-environment") {
+                        await signInWithRedirect(auth, googleProvider);
+                    } else {
+                        erroLogin.textContent = "Erro ao autenticar com a Google: " + error.message;
+                    }
                 }
             });
         }
