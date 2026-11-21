@@ -873,11 +873,15 @@ body {
 
     /* BANNER HERO NO CELULAR */
     .banner-hero {
-        min-height: 610px; /* Altura maximizada para o limite do banner */
-        padding: 4px 16px;
+        width: 100%;
+        height: auto;
+        min-height: unset;
+        aspect-ratio: 9 / 16;
+        padding: 0;
         background-image: url("imagens/gta.png");
-        background-size: cover;
+        background-size: 100% 100%;
         background-position: center top;
+        background-repeat: no-repeat;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -888,15 +892,17 @@ body {
     }
 
     .hero-conteudo {
-        position: relative;
+        position: absolute;
+        inset: 0;
         z-index: 2;
         display: flex;
         flex-direction: column;
         justify-content: space-between; 
         align-items: center;
         width: 100%;
-        height: 590px; /* Área interna esticada ao máximo para encostar o botão no limite inferior */
-        padding: 0;
+        height: 100%;
+        padding: 10px 16px 12px;
+        box-sizing: border-box;
     }
 
     /* Remove título, parágrafo e diferenciais na versão mobile */
