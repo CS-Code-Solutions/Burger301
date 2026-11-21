@@ -418,21 +418,33 @@
             background: #22c55e;
             color: #fff;
         }
-        .btn-excluir-banner {
+        .card-banner-acoes {
             position: absolute;
             top: 6px;
             right: 6px;
+            display: flex;
+            gap: 5px;
+            z-index: 3;
+        }
+        .btn-editar-banner,
+        .btn-excluir-banner {
             width: 26px !important;
             height: 26px !important;
             padding: 0 !important;
-            background: rgba(239, 68, 68, 0.9) !important;
             color: #fff;
             border-radius: 50%;
             font-size: 12px !important;
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 3;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-editar-banner {
+            background: rgba(59, 130, 246, 0.92) !important;
+        }
+        .btn-excluir-banner {
+            background: rgba(239, 68, 68, 0.92) !important;
         }
 
         /* =========================================
@@ -1466,7 +1478,12 @@
                 const card = document.createElement("div");
                 card.className = "card-banner-tema" + (estaAtivo ? " ativo" : "");
                 card.innerHTML = `
-                    ${!item.padrao ? `<button type="button" class="btn-excluir-banner" title="Excluir tema">🗑️</button>` : ""}
+                    ${!item.padrao ? `
+                        <div class="card-banner-acoes">
+                            <button type="button" class="btn-editar-banner" title="Renomear tema">✏️</button>
+                            <button type="button" class="btn-excluir-banner" title="Excluir tema">🗑️</button>
+                        </div>
+                    ` : ""}
                     <img src="${item.imagemThumb}" alt="${item.nome}">
                     <div class="card-banner-info">
                         <span class="card-banner-nome">${item.nome}</span>
@@ -1475,7 +1492,7 @@
                 `;
 
                 card.addEventListener("click", async (e) => {
-                    if (e.target.closest(".btn-excluir-banner")) return;
+                    if (e.target.closest(".card-banner-acoes")) return;
                     try {
                         await updateDoc(doc(db, "configuracoes", "loja"), {
                             bannerMobileAtivo: item.imagemSite,
@@ -1486,6 +1503,36 @@
                         console.error("Erro ao selecionar banner:", err);
                     }
                 });
+
+                const btnEdit = card.querySelector(".btn-editar-banner");
+                if (btnEdit) {
+                    btnEdit.addEventListener("click", async (e) => {
+                        e.stopPropagation();
+                        const novoNome = prompt("Digite o novo nome para este tema:", item.nome);
+                        if (novoNome === null) return;
+                        const nomeLimpo = novoNome.trim();
+                        if (!nomeLimpo) {
+                            alert("O nome do tema não pode ficar vazio.");
+                            return;
+                        }
+                        if (nomeLimpo === item.nome) return;
+
+                        try {
+                            await updateDoc(doc(db, "banners_mobile", item.id), {
+                                nome: nomeLimpo
+                            });
+                            if (estaAtivo) {
+                                await updateDoc(doc(db, "configuracoes", "loja"), {
+                                    bannerMobileNome: nomeLimpo
+                                });
+                            }
+                            mostrarMensagem(`Tema renomeado para "${nomeLimpo}"!`);
+                        } catch (err) {
+                            console.error("Erro ao renomear tema de banner:", err);
+                            alert("Erro ao renomear tema: " + (err.message || err));
+                        }
+                    });
+                }
 
                 const btnDel = card.querySelector(".btn-excluir-banner");
                 if (btnDel) {
