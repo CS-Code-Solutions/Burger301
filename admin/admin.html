@@ -1348,6 +1348,7 @@
         let bannerCompactadoDataUrl = "";
         let bannerMobileAtivoAtual = "";
         let bannerMobilePadraoNomeAtual = "Padrão (Original)";
+        let bannerMobilePadraoOcultoAtual = false;
         let bannersMobileSalvosCache = [];
 
         if (btnToggleBannerMobile && containerBannerMobile) {
@@ -1455,13 +1456,13 @@
             listaBannersMobile.innerHTML = "";
 
             const todosBanners = [
-                {
+                ...(!bannerMobilePadraoOcultoAtual ? [{
                     id: "padrao",
                     nome: bannerMobilePadraoNomeAtual,
                     imagemSite: "",
                     imagemThumb: "../imagens/gta.png",
                     padrao: true
-                },
+                }] : []),
                 ...bannersMobileSalvosCache.map(b => ({
                     id: b.id,
                     nome: b.nome,
@@ -1481,7 +1482,7 @@
                 card.innerHTML = `
                     <div class="card-banner-acoes">
                         <button type="button" class="btn-editar-banner" title="Renomear tema">✏️</button>
-                        ${!item.padrao ? `<button type="button" class="btn-excluir-banner" title="Excluir tema">🗑️</button>` : ""}
+                        <button type="button" class="btn-excluir-banner" title="Excluir tema">🗑️</button>
                     </div>
                     <img src="${item.imagemThumb}" alt="${item.nome}">
                     <div class="card-banner-info">
@@ -1549,12 +1550,36 @@
                         e.stopPropagation();
                         if (!confirm(`Excluir o tema "${item.nome}"?`)) return;
                         try {
-                            await deleteDoc(doc(db, "banners_mobile", item.id));
-                            if (estaAtivo) {
-                                await updateDoc(doc(db, "configuracoes", "loja"), {
-                                    bannerMobileAtivo: "",
-                                    bannerMobileNome: bannerMobilePadraoNomeAtual
-                                });
+                            if (item.padrao) {
+                                const atualizacao = {
+                                    bannerMobilePadraoOculto: true
+                                };
+                                if (estaAtivo && bannersMobileSalvosCache.length > 0) {
+                                    atualizacao.bannerMobileAtivo = bannersMobileSalvosCache[0].imagem;
+                                    atualizacao.bannerMobileNome = bannersMobileSalvosCache[0].nome;
+                                }
+                                await updateDoc(doc(db, "configuracoes", "loja"), atualizacao);
+                            } else {
+                                await deleteDoc(doc(db, "banners_mobile", item.id));
+                                if (estaAtivo) {
+                                    const restantes = bannersMobileSalvosCache.filter(b => b.id !== item.id);
+                                    if (!bannerMobilePadraoOcultoAtual) {
+                                        await updateDoc(doc(db, "configuracoes", "loja"), {
+                                            bannerMobileAtivo: "",
+                                            bannerMobileNome: bannerMobilePadraoNomeAtual
+                                        });
+                                    } else if (restantes.length > 0) {
+                                        await updateDoc(doc(db, "configuracoes", "loja"), {
+                                            bannerMobileAtivo: restantes[0].imagem,
+                                            bannerMobileNome: restantes[0].nome
+                                        });
+                                    } else {
+                                        await updateDoc(doc(db, "configuracoes", "loja"), {
+                                            bannerMobileAtivo: "",
+                                            bannerMobileNome: ""
+                                        });
+                                    }
+                                }
                             }
                             mostrarMensagem("Tema de banner removido!");
                         } catch (err) {
@@ -1648,6 +1673,7 @@
 
                     bannerMobileAtivoAtual = dados.bannerMobileAtivo || "";
                     bannerMobilePadraoNomeAtual = dados.bannerMobilePadraoNome || "Padrão (Original)";
+                    bannerMobilePadraoOcultoAtual = Boolean(dados.bannerMobilePadraoOculto);
                     renderizarCardsBannersMobile();
                 }
             });
