@@ -814,9 +814,9 @@
             </p>
             <p style="font-size: 14px; line-height: 1.5; color: #ccc;">
                 <b>Passo a passo:</b><br>
-                1. Use o otimizador automático acima para reduzir a foto do telemóvel.<br>
-                2. Faça o upload do ficheiro gerado para a pasta <code>imagens/</code> no repositório.<br>
-                3. O caminho fica preenchido automaticamente como: <code>imagens/nome.jpg</code>
+1. Use o otimizador automático acima para reduzir a foto do telemóvel.<br>
+2. Faça o upload do ficheiro gerado para a pasta <code>imagens/</code> no repositório.<br>
+3. O caminho fica preenchido automaticamente como: <code>imagens/nome.jpg</code>
             </p>
         </div>
     </div>
@@ -1575,4 +1575,521 @@
                 });
                 lista.sort((a, b) => (b.criadoEm || 0) - (a.criadoEm || 0));
                 bannersMobileSalvosCache = lista;
-                renderizarCardsBanners
+                renderizarCardsBannersMobile();
+            });
+        }
+
+        // OTIMIZADOR AUTOMÁTICO DE IMAGENS VIA CANVAS
+        const inputArquivoFoto = document.getElementById("input-arquivo-foto");
+        const statusOtimizacao = document.getElementById("status-otimizacao");
+        const linkDownloadOtimizado = document.getElementById("link-download-otimizado");
+        const novoImagem = document.getElementById("novo-imagem");
+
+        if (inputArquivoFoto) {
+            inputArquivoFoto.addEventListener("change", function(e) {
+                const ficheiro = e.target.files[0];
+                if (!ficheiro) return;
+
+                statusOtimizacao.textContent = "A otimizar imagem...";
+                statusOtimizacao.style.color = "#f28c28";
+
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement("canvas");
+                        let largura = img.width;
+                        let altura = img.height;
+
+                        const larguraMaxima = 800;
+                        if (largura > larguraMaxima) {
+                            altura = Math.round((altura * larguraMaxima) / largura);
+                            largura = larguraMaxima;
+                        }
+
+                        canvas.width = largura;
+                        canvas.height = altura;
+
+                        const ctx = canvas.getContext("2d");
+                        ctx.drawImage(img, 0, 0, largura, altura);
+
+                        canvas.toBlob(function(blob) {
+                            const nomeOriginal = ficheiro.name.replace(/\.[^/.]+$/, "").toLowerCase().replace(/[^a-z0-9]/g, "-");
+                            const nomeFicheiroOtimizado = `${nomeOriginal}.jpg`;
+
+                            const urlBlob = URL.createObjectURL(blob);
+                            linkDownloadOtimizado.href = urlBlob;
+                            linkDownloadOtimizado.download = nomeFicheiroOtimizado;
+                            linkDownloadOtimizado.style.display = "block";
+
+                            novoImagem.value = `imagens/${nomeFicheiroOtimizado}`;
+
+                            statusOtimizacao.textContent = `✅ Imagem pronta! Baixe o ficheiro abaixo e coloque-o na pasta imagens/.`;
+                            statusOtimizacao.style.color = "#4ade80";
+                        }, "image/jpeg", 0.8);
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(ficheiro);
+            });
+        }
+
+        function carregarDadosLoja() {
+            onSnapshot(doc(db, "configuracoes", "loja"), (docSnap) => {
+                if (docSnap.exists()) {
+                    const dados = docSnap.data();
+                    const modo = dados.modoLoja || (dados.aberto ? "aberto" : "fechado");
+                    atualizarBotoesModoLojaUI(modo);
+                    
+                    if (dados.whatsapp) {
+                        displayWhatsappAtual.textContent = dados.whatsapp;
+                        inputWhatsapp.value = dados.whatsapp;
+                    }
+
+                    bannerMobileAtivoAtual = dados.bannerMobileAtivo || "";
+                    bannerMobilePadraoNomeAtual = dados.bannerMobilePadraoNome || "Padrão (Original)";
+                    renderizarCardsBannersMobile();
+                }
+            });
+        }
+
+        function atualizarBotoesModoLojaUI(modo) {
+            btnModoAuto.classList.remove("ativo");
+            btnModoAberto.classList.remove("ativo");
+            btnModoFechado.classList.remove("ativo");
+
+            if (modo === "aberto") btnModoAberto.classList.add("ativo");
+            else if (modo === "fechado") btnModoFechado.classList.add("ativo");
+            else btnModoAuto.classList.add("ativo");
+        }
+
+        async function alterarModoLoja(novoModo) {
+            try {
+                await updateDoc(doc(db, "configuracoes", "loja"), {
+                    modoLoja: novoModo,
+                    aberto: novoModo === "aberto"
+                });
+                mostrarMensagem("Modo da loja atualizado com sucesso!");
+            } catch (e) {
+                console.error("Erro ao alterar modo:", e);
+            }
+        }
+
+        btnModoAuto.onclick = () => alterarModoLoja("automatico");
+        btnModoAberto.onclick = () => alterarModoLoja("aberto");
+        btnModoFechado.onclick = () => alterarModoLoja("fechado");
+
+        btnSalvarWhatsapp.addEventListener("click", async () => {
+            const novoWhats = inputWhatsapp.value.trim();
+            if (!novoWhats) {
+                alert("Digite um número de WhatsApp válido.");
+                return;
+            }
+            try {
+                await updateDoc(doc(db, "configuracoes", "loja"), { whatsapp: novoWhats });
+                mostrarMensagem("Número do WhatsApp atualizado!");
+                containerFormWhatsapp.style.display = "none";
+                btnToggleWhatsapp.textContent = "📞 Alterar Número do WhatsApp";
+            } catch (e) {
+                console.error("Erro ao salvar WhatsApp:", e);
+            }
+        });
+
+        const listaGestaoProdutos = document.getElementById("lista-gestao-produtos");
+        const novoNome = document.getElementById("novo-nome");
+        const novoCategoria = document.getElementById("novo-categoria");
+        const novoPreco = document.getElementById("novo-preco");
+        const novoDescricao = document.getElementById("novo-descricao");
+        const btnSalvarProduto = document.getElementById("btn-salvar-produto");
+        const editId = document.getElementById("edit-id");
+
+        function carregarProdutosAdmin() {
+            onSnapshot(collection(db, "produtos"), (snapshot) => {
+                listaGestaoProdutos.innerHTML = "";
+                selectPromoProduto.innerHTML = '<option value="">Selecione um produto</option>';
+                
+                const produtos = [];
+                snapshot.forEach(docSnap => {
+                    produtos.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                produtos.sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
+
+                if (produtos.length === 0) {
+                    listaGestaoProdutos.innerHTML = `<p style="font-size: 13px; color: #777;">Nenhum produto cadastrado.</p>`;
+                    return;
+                }
+
+                produtos.forEach(p => {
+                    const opt = document.createElement("option");
+                    opt.value = p.id;
+                    opt.textContent = `${p.nome} (R$ ${Number(p.preco).toFixed(2)})`;
+                    selectPromoProduto.appendChild(opt);
+
+                    const div = document.createElement("div");
+                    div.className = "item-admin-produto";
+                    div.innerHTML = `
+                        <div class="item-topo">
+                            <span><b>${p.nome}</b> (${p.categoria}) - R$ ${Number(p.preco).toFixed(2)}</span>
+                            <div class="item-botoes">
+                                <button type="button" class="btn-subir" data-id="${p.id}" style="padding: 4px 8px; font-size: 12px; background: #444;">⬆️</button>
+                                <button type="button" class="btn-descer" data-id="${p.id}" style="padding: 4px 8px; font-size: 12px; background: #444;">⬇️</button>
+                                <button type="button" class="btn-esgotar" data-id="${p.id}" data-esgotado="${p.esgotado}" style="padding: 4px 8px; font-size: 12px; background: ${p.esgotado ? '#ef4444' : '#22c55e'};">${p.esgotado ? 'Esgotado' : 'Disponível'}</button>
+                                <button type="button" class="btn-editar" data-id="${p.id}" style="padding: 4px 8px; font-size: 12px; background: #3b82f6;">✏️</button>
+                                <button type="button" class="btn-excluir" data-id="${p.id}" style="padding: 4px 8px; font-size: 12px; background: #ef4444;">🗑️</button>
+                            </div>
+                        </div>
+                    `;
+                    listaGestaoProdutos.appendChild(div);
+                });
+
+                configurarAcoesProdutos(produtos);
+            });
+        }
+
+        btnSalvarProduto.addEventListener("click", async () => {
+            const nome = novoNome.value.trim();
+            const categoria = novoCategoria.value;
+            const preco = parseFloat(novoPreco.value.replace(",", "."));
+            const descricao = novoDescricao.value.trim();
+            const imagem = novoImagem.value.trim();
+
+            if (!nome || isNaN(preco)) {
+                alert("Preencha o nome e um preço válido.");
+                return;
+            }
+
+            try {
+                if (editId.value) {
+                    await updateDoc(doc(db, "produtos", editId.value), { nome, categoria, preco, descricao, imagem });
+                    mostrarMensagem("Produto atualizado com sucesso!");
+                } else {
+                    const snapshot = await getDocs(collection(db, "produtos"));
+                    const novaOrdem = snapshot.size;
+                    await addDoc(collection(db, "produtos"), { nome, categoria, preco, descricao, imagem, esgotado: false, ordem: novaOrdem });
+                    mostrarMensagem("Produto cadastrado com sucesso!");
+                }
+                limparFormularioProduto();
+                containerFormProduto.style.display = "none";
+                btnToggleFormProduto.textContent = "➕ Adicionar Novo Produto";
+            } catch (e) {
+                console.error("Erro ao salvar produto:", e);
+            }
+        });
+
+        function limparFormularioProduto() {
+            editId.value = "";
+            novoNome.value = "";
+            novoPreco.value = "";
+            novoDescricao.value = "";
+            novoImagem.value = "../imagens/";
+            if(inputArquivoFoto) inputArquivoFoto.value = "";
+            if(linkDownloadOtimizado) linkDownloadOtimizado.style.display = "none";
+            if(statusOtimizacao) statusOtimizacao.textContent = "Escolha uma foto do telemóvel para reduzir o tamanho e otimizar para o site.";
+            btnSalvarProduto.textContent = "Cadastrar Produto";
+            btnCancelarEdicao.style.display = "none";
+            tituloFormProduto.textContent = "➕ Adicionar Novo Produto";
+        }
+
+        btnCancelarEdicao.addEventListener("click", () => {
+            limparFormularioProduto();
+            containerFormProduto.style.display = "none";
+            btnToggleFormProduto.textContent = "➕ Adicionar Novo Produto";
+        });
+
+        function configurarAcoesProdutos(produtos) {
+            document.querySelectorAll(".btn-esgotar").forEach(b => {
+                b.onclick = async () => {
+                    const id = b.dataset.id;
+                    const esgotadoAtual = b.dataset.esgotado === "true";
+                    await updateDoc(doc(db, "produtos", id), { esgotado: !esgotadoAtual });
+                };
+            });
+
+            document.querySelectorAll(".btn-excluir").forEach(b => {
+                b.onclick = async () => {
+                    if (confirm("Tem certeza que deseja excluir este produto?")) {
+                        await deleteDoc(doc(db, "produtos", b.dataset.id));
+                        mostrarMensagem("Produto excluído!");
+                    }
+                };
+            });
+
+            document.querySelectorAll(".btn-editar").forEach(b => {
+                b.onclick = () => {
+                    const p = produtos.find(item => item.id === b.dataset.id);
+                    if (!p) return;
+                    editId.value = p.id;
+                    novoNome.value = p.nome;
+                    novoCategoria.value = p.categoria;
+                    novoPreco.value = p.preco;
+                    novoDescricao.value = p.descricao || "";
+                    novoImagem.value = p.imagem || "../imagens/";
+                    btnSalvarProduto.textContent = "Salvar Alterações";
+                    btnCancelarEdicao.style.display = "block";
+                    tituloFormProduto.textContent = "✏️ Editar Produto";
+                    containerFormProduto.style.display = "block";
+                    btnToggleFormProduto.textContent = "❌ Fechar Formulário";
+                    containerFormProduto.scrollIntoView({ behavior: "smooth" });
+                };
+            });
+
+            document.querySelectorAll(".btn-subir").forEach(b => {
+                b.onclick = async () => {
+                    const id = b.dataset.id;
+                    const index = produtos.findIndex(item => item.id === id);
+                    if (index > 0) {
+                        const atual = produtos[index];
+                        const acima = produtos[index - 1];
+                        await updateDoc(doc(db, "produtos", atual.id), { ordem: acima.ordem ?? (index - 1) });
+                        await updateDoc(doc(db, "produtos", acima.id), { ordem: atual.ordem ?? index });
+                    }
+                };
+            });
+
+            document.querySelectorAll(".btn-descer").forEach(b => {
+                b.onclick = async () => {
+                    const id = b.dataset.id;
+                    const index = produtos.findIndex(item => item.id === id);
+                    if (index < produtos.length - 1) {
+                        const atual = produtos[index];
+                        const abaixo = produtos[index + 1];
+                        await updateDoc(doc(db, "produtos", atual.id), { ordem: abaixo.ordem ?? (index + 1) });
+                        await updateDoc(doc(db, "produtos", abaixo.id), { ordem: atual.ordem ?? index });
+                    }
+                };
+            });
+        }
+
+        btnAdicionarPromocao.addEventListener("click", async () => {
+            const produtoId = selectPromoProduto.value;
+            const preco = parseFloat(inputPromoPreco.value.replace(",", "."));
+            const descricao = inputPromoTexto.value.trim();
+
+            if (!produtoId || isNaN(preco)) {
+                alert("Selecione um produto e informe um preço promocional válido.");
+                return;
+            }
+
+            try {
+                const docRef = doc(db, "configuracoes", "loja");
+                const docSnap = await getDoc(docRef);
+                let promocoes = [];
+                if (docSnap.exists() && docSnap.data().promocoes) {
+                    promocoes = docSnap.data().promocoes;
+                }
+
+                promocoes.push({ produtoId, preco, descricao });
+                await updateDoc(docRef, { promocoes });
+
+                mostrarMensagem("Promoção adicionada com sucesso!");
+                inputPromoPreco.value = "";
+                inputPromoTexto.value = "";
+                selectPromoProduto.value = "";
+                containerFormPromo.style.display = "none";
+                btnToggleFormPromo.textContent = "➕ Adicionar Nova Promoção";
+            } catch (e) {
+                console.error("Erro ao adicionar promoção:", e);
+            }
+        });
+
+        onSnapshot(doc(db, "configuracoes", "loja"), (docSnap) => {
+            if (docSnap.exists()) {
+                const dados = docSnap.data();
+                const promocoes = dados.promocoes || [];
+                
+                listaAdminPromocoes.innerHTML = "";
+                if (promocoes.length === 0) {
+                    listaAdminPromocoes.innerHTML = `<p style="font-size: 13px; color: #777;">Nenhuma promoção adicionada.</p>`;
+                    return;
+                }
+
+                promocoes.forEach((promo, index) => {
+                    const div = document.createElement("div");
+                    div.style.cssText = "display: flex; justify-content: space-between; align-items: center; background: #222; padding: 8px; border-radius: 4px; margin-bottom: 6px; font-size: 13px;";
+                    div.innerHTML = `
+                        <span>Promoção #${index + 1} (R$ ${Number(promo.preco).toFixed(2)})</span>
+                        <button type="button" class="btn-remover-promo" data-index="${index}" style="padding: 3px 8px; font-size: 11px; background: #ef4444; width: auto;">Remover</button>
+                    `;
+                    listaAdminPromocoes.appendChild(div);
+                });
+
+                document.querySelectorAll(".btn-remover-promo").forEach(b => {
+                    b.onclick = async () => {
+                        const idx = parseInt(b.dataset.index);
+                        promocoes.splice(idx, 1);
+                        await updateDoc(doc(db, "configuracoes", "loja"), { promocoes });
+                        mostrarMensagem("Promoção removida!");
+                    };
+                });
+            }
+        });
+
+        const listaGestaoAdicionais = document.getElementById("lista-gestao-adicionais");
+        const adicNome = document.getElementById("adic-nome");
+        const adicPreco = document.getElementById("adic-preco");
+        const btnSalvarAdicional = document.getElementById("btn-salvar-adicional");
+        const editIdAdic = document.getElementById("edit-id-adic");
+        const btnCancelarEdicaoAdic = document.getElementById("btn-cancelar-edicao-adic");
+        const tituloFormAdicional = document.getElementById("titulo-form-adicional");
+
+        function carregarAdicionaisAdmin() {
+            onSnapshot(collection(db, "adicionais"), (snapshot) => {
+                listaGestaoAdicionais.innerHTML = "";
+                const adicionais = [];
+                snapshot.forEach(docSnap => {
+                    adicionais.push({ id: docSnap.id, ...docSnap.data() });
+                });
+
+                if (adicionais.length === 0) {
+                    listaGestaoAdicionais.innerHTML = `<p style="font-size: 13px; color: #777;">Nenhum adicional cadastrado.</p>`;
+                    return;
+                }
+
+                adicionais.forEach(a => {
+                    const div = document.createElement("div");
+                    div.className = "item-admin-produto";
+                    div.innerHTML = `
+                        <div class="item-topo">
+                            <span><b>${a.nome}</b> - R$ ${Number(a.preco).toFixed(2)}</span>
+                            <div class="item-botoes">
+                                <button type="button" class="btn-esgotar-adic" data-id="${a.id}" data-esgotado="${a.esgotado}" style="padding: 4px 8px; font-size: 12px; background: ${a.esgotado ? '#ef4444' : '#22c55e'};">${a.esgotado ? 'Esgotado' : 'Disponível'}</button>
+                                <button type="button" class="btn-editar-adic" data-id="${a.id}" style="padding: 4px 8px; font-size: 12px; background: #3b82f6;">✏️</button>
+                                <button type="button" class="btn-excluir-adic" data-id="${a.id}" style="padding: 4px 8px; font-size: 12px; background: #ef4444;">🗑️</button>
+                            </div>
+                        </div>
+                    `;
+                    listaGestaoAdicionais.appendChild(div);
+                });
+
+                configurarAcoesAdicionais(adicionais);
+            });
+        }
+
+        btnSalvarAdicional.addEventListener("click", async () => {
+            const nome = adicNome.value.trim();
+            const preco = parseFloat(adicPreco.value.replace(",", "."));
+
+            if (!nome || isNaN(preco)) {
+                alert("Preencha o nome e um preço válido para o adicional.");
+                return;
+            }
+
+            try {
+                if (editIdAdic.value) {
+                    await updateDoc(doc(db, "adicionais", editIdAdic.value), { nome, preco });
+                    mostrarMensagem("Adicional atualizado com sucesso!");
+                } else {
+                    await addDoc(collection(db, "adicionais"), { nome, preco, esgotado: false });
+                    mostrarMensagem("Adicional cadastrado com sucesso!");
+                }
+                limparFormularioAdicional();
+            } catch (e) {
+                console.error("Erro ao salvar adicional:", e);
+            }
+        });
+
+        function limparFormularioAdicional() {
+            editIdAdic.value = "";
+            adicNome.value = "";
+            adicPreco.value = "";
+            btnSalvarAdicional.textContent = "Cadastrar Adicional";
+            btnCancelarEdicaoAdic.style.display = "none";
+            tituloFormAdicional.textContent = "➕ Adicionar Novo Adicional";
+        }
+
+        btnCancelarEdicaoAdic.addEventListener("click", limparFormularioAdicional);
+
+        function configurarAcoesAdicionais(adicionais) {
+            document.querySelectorAll(".btn-esgotar-adic").forEach(b => {
+                b.onclick = async () => {
+                    const id = b.dataset.id;
+                    const esgotadoAtual = b.dataset.esgotado === "true";
+                    await updateDoc(doc(db, "adicionais", id), { esgotado: !esgotadoAtual });
+                };
+            });
+
+            document.querySelectorAll(".btn-excluir-adic").forEach(b => {
+                b.onclick = async () => {
+                    if (confirm("Deseja excluir este adicional?")) {
+                        await deleteDoc(doc(db, "adicionais", b.dataset.id));
+                        mostrarMensagem("Adicional excluído!");
+                    }
+                };
+            });
+
+            document.querySelectorAll(".btn-editar-adic").forEach(b => {
+                b.onclick = () => {
+                    const a = adicionais.find(item => item.id === b.dataset.id);
+                    if (!a) return;
+                    editIdAdic.value = a.id;
+                    adicNome.value = a.nome;
+                    adicPreco.value = a.preco;
+                    btnSalvarAdicional.textContent = "Salvar Alterações";
+                    btnCancelarEdicaoAdic.style.display = "block";
+                    tituloFormAdicional.textContent = "✏️ Editar Adicional";
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                };
+            });
+        }
+
+        const tabProdutos = document.getElementById("tab-produtos");
+        const tabAdicionais = document.getElementById("tab-adicionais");
+        const conteudoProdutos = document.getElementById("conteudo-produtos");
+        const conteudoAdicionais = document.getElementById("conteudo-adicionais");
+
+        tabProdutos.addEventListener("click", () => {
+            tabProdutos.classList.add("ativa");
+            tabAdicionais.classList.remove("ativa");
+            conteudoProdutos.style.display = "block";
+            conteudoAdicionais.style.display = "none";
+        });
+
+        tabAdicionais.addEventListener("click", () => {
+            tabAdicionais.classList.add("ativa");
+            tabProdutos.classList.remove("ativa");
+            conteudoAdicionais.style.display = "block";
+            conteudoProdutos.style.display = "none";
+        });
+
+        const btnAjudaImg = document.getElementById("btn-ajuda-img");
+        const modalAjudaImg = document.getElementById("modal-ajuda-img");
+        const fecharAjudaImg = document.getElementById("fechar-ajuda-img");
+
+        btnAjudaImg.onclick = () => modalAjudaImg.style.display = "flex";
+        fecharAjudaImg.onclick = () => modalAjudaImg.style.display = "none";
+        window.onclick = (e) => {
+            if (e.target === modalAjudaImg) modalAjudaImg.style.display = "none";
+        };
+
+        function mostrarMensagem(texto) {
+            msgSucesso.textContent = texto;
+            setTimeout(() => { msgSucesso.textContent = ""; }, 4000);
+        }
+
+        const googleProvider = new GoogleAuthProvider();
+
+        if (btnLoginGoogle) {
+            btnLoginGoogle.addEventListener("click", async () => {
+                erroLogin.textContent = "";
+                sessionStorage.setItem(CHAVE_SESSAO_DESBLOQUEADA, "true");
+                const registro = obterRegistroBiometria();
+                if (registro && registro.email) {
+                    googleProvider.setCustomParameters({ login_hint: registro.email });
+                }
+
+                try {
+                    await signInWithPopup(auth, googleProvider);
+                } catch (error) {
+                    console.error("Erro no login Google:", error);
+                    if (error.code === "auth/popup-blocked" || error.code === "auth/operation-not-supported-in-this-environment") {
+                        await signInWithRedirect(auth, googleProvider);
+                    } else {
+                        sessionStorage.removeItem(CHAVE_SESSAO_DESBLOQUEADA);
+                        erroLogin.textContent = "Erro ao autenticar com a Google: " + error.message;
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
