@@ -40,7 +40,7 @@ let listaProdutosCache = [];
 
 // Aplica dinamicamente o tema de Banner Mobile escolhido no Admin e adapta a proporção na tela
 function aplicarBannerMobileDinamico(imagemBanner) {
-    const srcFinal = imagemBanner || "imagens/gta.png";
+    const srcFinal = imagemBanner || "imagens/banner-mobile.jpg";
     const imgTemp = new Image();
 
     imgTemp.onload = () => {
