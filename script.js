@@ -38,6 +38,73 @@ let listaPromocoesAtivas = [];
 
 let listaProdutosCache = [];
 
+// Duração em ms para o GIF do banner rodar ao abrir/atualizar antes de congelar estático
+const DURACAO_GIF_BANNER_MS = 3500;
+let timerCongelarBannerMobile = null;
+
+function obterCaminhoGifPorImagem(caminhoImagem) {
+    if (!caminhoImagem) return "";
+    const semQuery = String(caminhoImagem).split("?")[0];
+    const nomeArquivo = semQuery.split("/").pop();
+    if (!nomeArquivo) return "";
+    const nomeSemExtensao = nomeArquivo.replace(/\.[^/.]+$/, "");
+    return `gif/${nomeSemExtensao}.gif`;
+}
+
+function congelarImagemEmDataUrl(imgElement, fallbackUrl) {
+    try {
+        if (!imgElement || !imgElement.naturalWidth || !imgElement.naturalHeight) {
+            return fallbackUrl || "";
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = imgElement.naturalWidth;
+        canvas.height = imgElement.naturalHeight;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(imgElement, 0, 0);
+        return canvas.toDataURL("image/png");
+    } catch (e) {
+        return fallbackUrl || "";
+    }
+}
+
+function iniciarAnimacaoBannerMobileUmaVez(urlGif, fallbackEstatico) {
+    if (window.innerWidth > 768) return;
+    const hero = document.querySelector(".banner-hero");
+    if (!hero) return;
+
+    if (timerCongelarBannerMobile) {
+        clearTimeout(timerCongelarBannerMobile);
+        timerCongelarBannerMobile = null;
+    }
+
+    const gifComReinicio = `${urlGif}${urlGif.includes("?") ? "&" : "?"}t=${Date.now()}`;
+    const imgGif = new Image();
+    imgGif.crossOrigin = "anonymous";
+
+    imgGif.onload = () => {
+        hero.style.aspectRatio = `${imgGif.naturalWidth} / ${imgGif.naturalHeight}`;
+        hero.style.backgroundImage = `url("${gifComReinicio}")`;
+
+        timerCongelarBannerMobile = setTimeout(() => {
+            const quadroCongelado = congelarImagemEmDataUrl(imgGif, fallbackEstatico || "imagens/banner-mobile.jpg");
+            if (quadroCongelado) {
+                hero.style.backgroundImage = `url("${quadroCongelado}")`;
+            }
+        }, DURACAO_GIF_BANNER_MS);
+    };
+
+    imgGif.onerror = () => {
+        const imgFallback = new Image();
+        imgFallback.onload = () => {
+            hero.style.aspectRatio = `${imgFallback.naturalWidth} / ${imgFallback.naturalHeight}`;
+            hero.style.backgroundImage = `url("${fallbackEstatico || "imagens/banner-mobile.jpg"}")`;
+        };
+        imgFallback.src = fallbackEstatico || "imagens/banner-mobile.jpg";
+    };
+
+    imgGif.src = gifComReinicio;
+}
+
 // Aplica dinamicamente o tema de Banner Mobile escolhido no Admin e adapta a proporção na tela
 function aplicarBannerMobileDinamico(imagemBanner) {
     const srcFinal = imagemBanner || "imagens/banner-mobile.jpg";
@@ -53,6 +120,14 @@ function aplicarBannerMobileDinamico(imagemBanner) {
 
         const bgRule = imagemBanner ? `background-image: url("${imagemBanner}") !important;` : "";
         estiloTag.textContent = `@media (max-width: 768px) { .banner-hero { ${bgRule} aspect-ratio: ${imgTemp.naturalWidth} / ${imgTemp.naturalHeight} !important; } }`;
+
+        const gifBannerUrl = imagemBanner
+            ? (imagemBanner.startsWith("data:image/gif") ? imagemBanner : obterCaminhoGifPorImagem(imagemBanner))
+            : obterCaminhoGifPorImagem(srcFinal);
+
+        if (gifBannerUrl) {
+            iniciarAnimacaoBannerMobileUmaVez(gifBannerUrl, srcFinal);
+        }
     };
 
     imgTemp.onerror = () => {
@@ -309,6 +384,52 @@ function renderizarBannersPromocoes() {
     reativarEventosBotoes();
 }
 
+function restaurarCardImagem(card) {
+    if (!card) return;
+    const img = card.querySelector(".produto-imagem img");
+    if (!img || !img.dataset.imgOriginal) return;
+    img.src = img.dataset.imgOriginal;
+    img.dataset.gifAtivo = "false";
+}
+
+function configurarCliqueGifNosCards() {
+    document.querySelectorAll(".produto").forEach((card) => {
+        card.addEventListener("click", (e) => {
+            if (e.target.closest(".botao-adicionar")) return;
+
+            const img = card.querySelector(".produto-imagem img");
+            if (!img) return;
+
+            const gifUrl = img.dataset.gifUrl;
+            const imgOriginal = img.dataset.imgOriginal;
+            if (!gifUrl || !imgOriginal) return;
+
+            const estaRodandoGif = img.dataset.gifAtivo === "true";
+
+            document.querySelectorAll(".produto").forEach((outroCard) => {
+                if (outroCard !== card) {
+                    restaurarCardImagem(outroCard);
+                }
+            });
+
+            if (estaRodandoGif) {
+                restaurarCardImagem(card);
+                return;
+            }
+
+            const testeGif = new Image();
+            testeGif.onload = () => {
+                img.src = `${gifUrl}?t=${Date.now()}`;
+                img.dataset.gifAtivo = "true";
+            };
+            testeGif.onerror = () => {
+                restaurarCardImagem(card);
+            };
+            testeGif.src = gifUrl;
+        });
+    });
+}
+
 // Função para desenhar os produtos no HTML
 function renderizarCardapio(produtos) {
     const hamburgueresContainer = document.getElementById("lista-hamburgueres");
@@ -326,9 +447,11 @@ function renderizarCardapio(produtos) {
             artigo.style.filter = "grayscale(100%) opacity(0.5)";
         }
 
+        const gifUrl = p.categoria === "hamburgueres" ? obterCaminhoGifPorImagem(p.imagem) : "";
+
         artigo.innerHTML = `
             <div class="produto-imagem" style="position: relative;">
-                <img src="${p.imagem}" alt="${p.nome}">
+                <img src="${p.imagem}" alt="${p.nome}" data-img-original="${p.imagem}" data-gif-url="${gifUrl}" data-gif-ativo="false">
                 ${p.esgotado ? '<span class="selo-esgotado" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.85); color: #fff; padding: 6px 14px; border-radius: 5px; font-weight: bold; font-size: 14px; z-index: 2;">ESGOTADO</span>' : ''}
             </div>
             <div class="produto-informacoes">
@@ -348,6 +471,7 @@ function renderizarCardapio(produtos) {
         }
     });
 
+    configurarCliqueGifNosCards();
     reativarEventosBotoes();
 }
 
