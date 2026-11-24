@@ -889,7 +889,6 @@
 
         let deferredPrompt;
         const btnInstalar = document.getElementById('btn-instalar');
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.navigator.standalone;
         const jaInstalado = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 
         function atualizarBotaoInstalarPainel() {
@@ -911,19 +910,12 @@
 
         if (btnInstalar) {
             btnInstalar.addEventListener('click', async () => {
-                if (isIOS) {
-                    alert("📱 Como instalar o Admin no iPhone:\n\n1. Toque no botão de partilha ⎋ (na barra do Safari).\n2. Role para baixo e selecione 'Adicionar à Tela de Início'.");
-                    return;
-                }
-                if (deferredPrompt) {
-                    deferredPrompt.prompt();
-                    const { outcome } = await deferredPrompt.userChoice;
-                    deferredPrompt = null;
-                    if (outcome === 'accepted') {
-                        btnInstalar.style.display = 'none';
-                    }
-                } else {
-                    alert("Para instalar o App Admin, abra o menu do navegador (⋮) e toque em 'Instalar aplicativo' ou 'Adicionar à tela inicial'.");
+                if (!deferredPrompt) return;
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                deferredPrompt = null;
+                if (outcome === 'accepted') {
+                    btnInstalar.style.display = 'none';
                 }
             });
         }
