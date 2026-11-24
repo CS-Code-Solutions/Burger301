@@ -70,13 +70,25 @@ function congelarImagemEmDataUrl(imgElement, fallbackUrl) {
     }
 }
 
-function prepararGifEstaticoNoCard(img, gifUrl, fallbackImagem) {
+function bloquearGifNoCard(img) {
+    if (!img) return;
+    img.dataset.gifLiberado = "false";
+    img.dataset.gifAtivo = "false";
+    const frameEstatico = img.dataset.frameEstatico || img.dataset.fallbackImagem || "";
+    if (frameEstatico && img.src !== frameEstatico) {
+        img.src = frameEstatico;
+    }
+}
+
+function prepararFrameEstaticoBloqueado(img, gifUrl, fallbackImagem) {
     if (!img || !gifUrl) return;
+    img.dataset.gifLiberado = "false";
+    img.dataset.gifAtivo = "false";
 
     if (cachePrimeiroQuadroGif.has(gifUrl)) {
         const frameSalvo = cachePrimeiroQuadroGif.get(gifUrl);
         img.dataset.frameEstatico = frameSalvo;
-        if (img.dataset.gifAtivo !== "true") {
+        if (img.dataset.gifLiberado !== "true") {
             img.src = frameSalvo;
         }
         return;
@@ -85,19 +97,18 @@ function prepararGifEstaticoNoCard(img, gifUrl, fallbackImagem) {
     const loader = new Image();
     loader.crossOrigin = "anonymous";
     loader.onload = () => {
-        const frameEstatico = congelarImagemEmDataUrl(loader, gifUrl);
+        const frameEstatico = congelarImagemEmDataUrl(loader, fallbackImagem || gifUrl);
         cachePrimeiroQuadroGif.set(gifUrl, frameEstatico);
         img.dataset.frameEstatico = frameEstatico;
-        if (img.dataset.gifAtivo !== "true") {
+        if (img.dataset.gifLiberado !== "true") {
             img.src = frameEstatico;
         }
     };
     loader.onerror = () => {
-        if (fallbackImagem) {
-            img.dataset.frameEstatico = fallbackImagem;
-            if (img.dataset.gifAtivo !== "true") {
-                img.src = fallbackImagem;
-            }
+        const fallbackSeguro = fallbackImagem || "";
+        img.dataset.frameEstatico = fallbackSeguro;
+        if (img.dataset.gifLiberado !== "true" && fallbackSeguro) {
+            img.src = fallbackSeguro;
         }
     };
     loader.src = gifUrl;
@@ -424,30 +435,25 @@ function congelarCardGif(card) {
     if (!card) return;
     const img = card.querySelector(".produto-imagem img");
     if (!img) return;
-    const frameEstatico = img.dataset.frameEstatico || img.dataset.gifUrl || img.dataset.fallbackImagem;
-    if (frameEstatico) {
-        img.src = frameEstatico;
-    }
-    img.dataset.gifAtivo = "false";
+    bloquearGifNoCard(img);
 }
 
 function configurarCliqueGifNosCards() {
     document.querySelectorAll(".produto").forEach((card) => {
         const img = card.querySelector(".produto-imagem img");
         if (img && img.dataset.gifUrl) {
-            prepararGifEstaticoNoCard(img, img.dataset.gifUrl, img.dataset.fallbackImagem);
+            prepararFrameEstaticoBloqueado(img, img.dataset.gifUrl, img.dataset.fallbackImagem);
         }
 
         card.addEventListener("click", (e) => {
             if (e.target.closest(".botao-adicionar")) return;
-
             if (!img) return;
 
             const gifUrl = img.dataset.gifUrl;
             const fallbackImagem = img.dataset.fallbackImagem;
             if (!gifUrl) return;
 
-            const estaRodandoGif = img.dataset.gifAtivo === "true";
+            const estaRodandoGif = img.dataset.gifLiberado === "true" && img.dataset.gifAtivo === "true";
 
             document.querySelectorAll(".produto").forEach((outroCard) => {
                 if (outroCard !== card) {
@@ -460,16 +466,19 @@ function configurarCliqueGifNosCards() {
                 return;
             }
 
+            img.dataset.gifLiberado = "true";
+
             const testeGif = new Image();
             testeGif.onload = () => {
+                if (img.dataset.gifLiberado !== "true") return;
                 img.src = `${gifUrl}?t=${Date.now()}`;
                 img.dataset.gifAtivo = "true";
             };
             testeGif.onerror = () => {
+                bloquearGifNoCard(img);
                 if (fallbackImagem) {
                     img.src = fallbackImagem;
                 }
-                img.dataset.gifAtivo = "false";
             };
             testeGif.src = gifUrl;
         });
@@ -494,11 +503,11 @@ function renderizarCardapio(produtos) {
         }
 
         const gifUrl = obterCaminhoGifPorImagem(p.imagem);
-        const srcInicial = gifUrl || p.imagem;
+        const srcInicial = p.imagem || "";
 
         artigo.innerHTML = `
             <div class="produto-imagem" style="position: relative;">
-                <img src="${srcInicial}" alt="${p.nome}" data-fallback-imagem="${p.imagem}" data-gif-url="${gifUrl}" data-frame-estatico="${srcInicial}" data-gif-ativo="false">
+                <img src="${srcInicial}" alt="${p.nome}" data-fallback-imagem="${p.imagem}" data-gif-url="${gifUrl}" data-frame-estatico="${srcInicial}" data-gif-liberado="false" data-gif-ativo="false">
                 ${p.esgotado ? '<span class="selo-esgotado" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.85); color: #fff; padding: 6px 14px; border-radius: 5px; font-weight: bold; font-size: 14px; z-index: 2;">ESGOTADO</span>' : ''}
             </div>
             <div class="produto-informacoes">
