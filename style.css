@@ -5,6 +5,7 @@
 :root {
     --fonte-titulo: 'Archivo Black', sans-serif;
     --fonte-corpo: 'DM Sans', Arial, Helvetica, sans-serif;
+    --altura-header: 52px;
 }
 
 * {
@@ -26,19 +27,33 @@ body {
     background-attachment: fixed;
     color: #222;
     line-height: 1.6;
+    padding-top: var(--altura-header);
+}
+
+#hamburgueres,
+#porcoes,
+#rodape-duvidas,
+#cardapio {
+    scroll-margin-top: calc(var(--altura-header) + 14px);
 }
 
 /* =========================================
-   CABEÇALHO SUPERIOR (HEADER)
+   CABEÇALHO SUPERIOR FIXO (HEADER)
 ========================================= */
 
 .header-topo {
-    position: relative;
-    z-index: 1000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--altura-header);
+    z-index: 2000;
     background-color: #121212;
     border-bottom: 1px solid #222222;
-    padding: 10px 16px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    padding: 8px 16px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
     margin-bottom: 0 !important;
 }
 
@@ -963,6 +978,10 @@ body {
 ========================================= */
 
 @media (max-width: 768px) {
+
+    :root {
+        --altura-header: 48px;
+    }
 
     /* Cabeçalho Ajustado no Telemóvel */
     .logo-header {
