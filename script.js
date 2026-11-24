@@ -42,6 +42,9 @@ let listaProdutosCache = [];
 const DURACAO_GIF_BANNER_MS = 3500;
 let timerCongelarBannerMobile = null;
 
+// Cache do primeiro quadro congelado de cada GIF para iniciar estático sem duplicar imagem
+const cachePrimeiroQuadroGif = new Map();
+
 function obterCaminhoGifPorImagem(caminhoImagem) {
     if (!caminhoImagem) return "";
     const semQuery = String(caminhoImagem).split("?")[0];
@@ -65,6 +68,39 @@ function congelarImagemEmDataUrl(imgElement, fallbackUrl) {
     } catch (e) {
         return fallbackUrl || "";
     }
+}
+
+function prepararGifEstaticoNoCard(img, gifUrl, fallbackImagem) {
+    if (!img || !gifUrl) return;
+
+    if (cachePrimeiroQuadroGif.has(gifUrl)) {
+        const frameSalvo = cachePrimeiroQuadroGif.get(gifUrl);
+        img.dataset.frameEstatico = frameSalvo;
+        if (img.dataset.gifAtivo !== "true") {
+            img.src = frameSalvo;
+        }
+        return;
+    }
+
+    const loader = new Image();
+    loader.crossOrigin = "anonymous";
+    loader.onload = () => {
+        const frameEstatico = congelarImagemEmDataUrl(loader, gifUrl);
+        cachePrimeiroQuadroGif.set(gifUrl, frameEstatico);
+        img.dataset.frameEstatico = frameEstatico;
+        if (img.dataset.gifAtivo !== "true") {
+            img.src = frameEstatico;
+        }
+    };
+    loader.onerror = () => {
+        if (fallbackImagem) {
+            img.dataset.frameEstatico = fallbackImagem;
+            if (img.dataset.gifAtivo !== "true") {
+                img.src = fallbackImagem;
+            }
+        }
+    };
+    loader.src = gifUrl;
 }
 
 function iniciarAnimacaoBannerMobileUmaVez(urlGif, fallbackEstatico) {
@@ -384,36 +420,43 @@ function renderizarBannersPromocoes() {
     reativarEventosBotoes();
 }
 
-function restaurarCardImagem(card) {
+function congelarCardGif(card) {
     if (!card) return;
     const img = card.querySelector(".produto-imagem img");
-    if (!img || !img.dataset.imgOriginal) return;
-    img.src = img.dataset.imgOriginal;
+    if (!img) return;
+    const frameEstatico = img.dataset.frameEstatico || img.dataset.gifUrl || img.dataset.fallbackImagem;
+    if (frameEstatico) {
+        img.src = frameEstatico;
+    }
     img.dataset.gifAtivo = "false";
 }
 
 function configurarCliqueGifNosCards() {
     document.querySelectorAll(".produto").forEach((card) => {
+        const img = card.querySelector(".produto-imagem img");
+        if (img && img.dataset.gifUrl) {
+            prepararGifEstaticoNoCard(img, img.dataset.gifUrl, img.dataset.fallbackImagem);
+        }
+
         card.addEventListener("click", (e) => {
             if (e.target.closest(".botao-adicionar")) return;
 
-            const img = card.querySelector(".produto-imagem img");
             if (!img) return;
 
             const gifUrl = img.dataset.gifUrl;
-            const imgOriginal = img.dataset.imgOriginal;
-            if (!gifUrl || !imgOriginal) return;
+            const fallbackImagem = img.dataset.fallbackImagem;
+            if (!gifUrl) return;
 
             const estaRodandoGif = img.dataset.gifAtivo === "true";
 
             document.querySelectorAll(".produto").forEach((outroCard) => {
                 if (outroCard !== card) {
-                    restaurarCardImagem(outroCard);
+                    congelarCardGif(outroCard);
                 }
             });
 
             if (estaRodandoGif) {
-                restaurarCardImagem(card);
+                congelarCardGif(card);
                 return;
             }
 
@@ -423,7 +466,10 @@ function configurarCliqueGifNosCards() {
                 img.dataset.gifAtivo = "true";
             };
             testeGif.onerror = () => {
-                restaurarCardImagem(card);
+                if (fallbackImagem) {
+                    img.src = fallbackImagem;
+                }
+                img.dataset.gifAtivo = "false";
             };
             testeGif.src = gifUrl;
         });
@@ -448,10 +494,11 @@ function renderizarCardapio(produtos) {
         }
 
         const gifUrl = obterCaminhoGifPorImagem(p.imagem);
+        const srcInicial = gifUrl || p.imagem;
 
         artigo.innerHTML = `
             <div class="produto-imagem" style="position: relative;">
-                <img src="${p.imagem}" alt="${p.nome}" data-img-original="${p.imagem}" data-gif-url="${gifUrl}" data-gif-ativo="false">
+                <img src="${srcInicial}" alt="${p.nome}" data-fallback-imagem="${p.imagem}" data-gif-url="${gifUrl}" data-frame-estatico="${srcInicial}" data-gif-ativo="false">
                 ${p.esgotado ? '<span class="selo-esgotado" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.85); color: #fff; padding: 6px 14px; border-radius: 5px; font-weight: bold; font-size: 14px; z-index: 2;">ESGOTADO</span>' : ''}
             </div>
             <div class="produto-informacoes">
