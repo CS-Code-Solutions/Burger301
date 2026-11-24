@@ -28,6 +28,7 @@
     <!-- CONFIGURAÇÕES DE PWA (APLICAÇÃO INSTALÁVEL INDEPENDENTE) -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#f28c28">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Admin 301">
@@ -100,6 +101,18 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.8);
             border: 1px solid rgba(242, 140, 40, 0.4);
             backdrop-filter: blur(6px);
+        }
+
+        /* LOGO SEM CÍRCULO */
+        .logo-login-sem-circulo {
+            width: 76px;
+            height: 76px;
+            object-fit: contain;
+            border-radius: 0;
+            border: none;
+            box-shadow: none;
+            margin-bottom: 10px;
+            display: inline-block;
         }
 
         .botoes-login-grupo {
@@ -194,24 +207,28 @@
             transition: background-color 0.25s, box-shadow 0.25s;
         }
         
-        /* BOTÃO DE INSTALAÇÃO DISCRETO */
+        /* BOTÃO DE INSTALAÇÃO NO PAINEL */
         #btn-instalar {
-            display: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             position: absolute;
             top: 15px;
             right: 15px;
-            background: transparent;
-            border: none;
-            font-size: 22px;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 8px;
+            font-size: 16px;
             cursor: pointer;
             color: #f28c28;
-            padding: 5px;
-            transition: transform 0.2s;
+            padding: 5px 9px;
+            transition: transform 0.2s, background-color 0.2s;
             width: auto;
             z-index: 10;
         }
         #btn-instalar:hover {
-            transform: scale(1.1);
+            transform: scale(1.06);
+            background: #383838;
         }
 
         /* BOTÃO DE TEMA CLARO / ESCURO */
@@ -458,7 +475,8 @@
             background: #ffffff !important;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
-        body.tema-claro #btn-tema-admin {
+        body.tema-claro #btn-tema-admin,
+        body.tema-claro #btn-instalar {
             background: #f3f4f6;
             border-color: #d1d5db;
             color: #111827;
@@ -573,7 +591,7 @@
         <img id="bg-login-img" src="../imagens/banner.jpg" alt="Banner Burger 301">
         
         <div class="login-card">
-            <img src="../imagens/icone.png" alt="Logo Burger 301" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; border: 2px solid #f28c28; box-shadow: 0 4px 10px rgba(0,0,0,0.5);">
+            <img src="../imagens/icone.png" alt="Logo Burger 301" class="logo-login-sem-circulo">
             <h2 style="margin-top: 0; margin-bottom: 18px; font-size: 18px;">Área Restrita</h2>
             
             <div class="botoes-login-grupo">
@@ -608,8 +626,8 @@
         <!-- Botão Tema Claro / Escuro -->
         <button id="btn-tema-admin" type="button" title="Alternar Tema Claro / Escuro">☀️</button>
 
-        <!-- Ícone discreto de instalação -->
-        <button id="btn-instalar" title="Instalar Aplicação">📥</button>
+        <!-- Botão de instalação dentro do painel -->
+        <button id="btn-instalar" type="button" title="Instalar App Admin">📥</button>
 
         <div id="painel-controle" class="painel-conteudo">
             <h2 style="margin-top: 10px;">⚙️ Painel Burger 301</h2>
@@ -863,7 +881,7 @@
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
+                navigator.serviceWorker.register('sw.js', { scope: './' })
                 .then(reg => console.log('Service Worker Admin registado!', reg))
                 .catch(err => console.error('Erro no Service Worker Admin:', err));
             });
@@ -872,32 +890,46 @@
         let deferredPrompt;
         const btnInstalar = document.getElementById('btn-instalar');
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.navigator.standalone;
+        const jaInstalado = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 
-        if (isIOS && btnInstalar) {
-            btnInstalar.style.display = 'block';
-            btnInstalar.addEventListener('click', () => {
-                alert("📱 Como instalar no iPhone:\n\n1. Toque no botão de partilha ⎋ (na barra do Safari).\n2. Role para baixo e selecione 'Adicionar ao Ecrã Principal'.");
-            });
+        function atualizarBotaoInstalarPainel() {
+            if (!btnInstalar) return;
+            if (jaInstalado) {
+                btnInstalar.style.display = 'none';
+            } else {
+                btnInstalar.style.display = 'inline-flex';
+            }
         }
+
+        atualizarBotaoInstalarPainel();
 
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            if (btnInstalar && !isIOS) btnInstalar.style.display = 'block';
+            atualizarBotaoInstalarPainel();
         });
 
-        if (btnInstalar && !isIOS) {
+        if (btnInstalar) {
             btnInstalar.addEventListener('click', async () => {
+                if (isIOS) {
+                    alert("📱 Como instalar o Admin no iPhone:\n\n1. Toque no botão de partilha ⎋ (na barra do Safari).\n2. Role para baixo e selecione 'Adicionar à Tela de Início'.");
+                    return;
+                }
                 if (deferredPrompt) {
                     deferredPrompt.prompt();
                     const { outcome } = await deferredPrompt.userChoice;
                     deferredPrompt = null;
-                    btnInstalar.style.display = 'none';
+                    if (outcome === 'accepted') {
+                        btnInstalar.style.display = 'none';
+                    }
+                } else {
+                    alert("Para instalar o App Admin, abra o menu do navegador (⋮) e toque em 'Instalar aplicativo' ou 'Adicionar à tela inicial'.");
                 }
             });
         }
 
         window.addEventListener('appinstalled', () => {
+            deferredPrompt = null;
             if (btnInstalar) btnInstalar.style.display = 'none';
         });
     </script>
@@ -971,7 +1003,6 @@
 
         let usuarioAutorizadoAtual = null;
 
-        // Trata retorno automático de signInWithRedirect quando o token Google precisa ser renovado após o Face ID
         getRedirectResult(auth).catch((error) => {
             if (error) {
                 console.error("Erro no redirect Google:", error);
@@ -1163,7 +1194,6 @@
                 return;
             }
 
-            // Biometria confirmada! Entra diretamente no painel
             try {
                 if (typeof auth.authStateReady === "function") {
                     await auth.authStateReady();
@@ -1174,7 +1204,6 @@
                     return;
                 }
 
-                // Se a sessão Google expirou no aparelho, renova automaticamente via redirecionamento sem precisar clicar em outro botão
                 statusBiometriaLogin.style.color = "#4ade80";
                 statusBiometriaLogin.textContent = "Face ID confirmado! Entrando no painel...";
                 const provider = new GoogleAuthProvider();
@@ -1257,7 +1286,6 @@
             sessionStorage.removeItem(CHAVE_SESSAO_DESBLOQUEADA);
 
             if (obterRegistroBiometria()) {
-                // Bloqueia a tela mantendo a sessão Google vinculada para reentrada direta com Face ID / Digital
                 telaLogin.style.display = "flex";
                 containerPrincipal.style.background = "transparent";
                 painelControle.style.display = "none";
@@ -1283,6 +1311,7 @@
                 telaLogin.style.display = "none";
                 containerPrincipal.style.background = "#1e1e1e";
                 painelControle.style.display = "block";
+                atualizarBotaoInstalarPainel();
                 atualizarEstadoBiometriaUI();
                 carregarDadosLoja();
                 carregarProdutosAdmin();
@@ -1304,7 +1333,6 @@
                 const registro = obterRegistroBiometria();
                 const sessaoDesbloqueada = sessionStorage.getItem(CHAVE_SESSAO_DESBLOQUEADA) === "true";
 
-                // Se há biometria ativa neste aparelho e a sessão atual ainda não foi desbloqueada, exige Face ID / Digital
                 if (registro && registro.email === user.email.toLowerCase() && !sessaoDesbloqueada) {
                     usuarioAutorizadoAtual = null;
                     telaLogin.style.display = "flex";
@@ -1428,7 +1456,6 @@
                         criadoEm: Date.now()
                     });
 
-                    // Já aplica automaticamente o novo tema no site
                     await updateDoc(doc(db, "configuracoes", "loja"), {
                         bannerMobileAtivo: bannerCompactadoDataUrl,
                         bannerMobileNome: nomeTema
