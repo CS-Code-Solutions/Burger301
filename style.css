@@ -268,19 +268,24 @@ body {
 }
 
 /* Ajustes exclusivos para PC (tela maior que 768px):
-   - Remove conteúdo/banner sobreposto na frente do banner
-   - Remove máscara na frente do banner
-   - Ajusta o posicionamento/enquadramento do banner */
+   - Ocupa apenas a faixa acima do cardápio (mesma largura do cardápio, sem tela de fora a fora)
+   - Remove conteúdo/banner sobreposto e máscara na frente do banner
+   - Ajusta o enquadramento/altura para mostrar sem cortar */
 @media (min-width: 769px) {
     .banner-hero {
-        width: 100%;
-        min-height: 440px;
-        height: 440px;
+        width: calc(100% - 40px);
+        max-width: 1060px;
+        min-height: 360px;
+        height: 360px;
+        margin: 18px auto 6px !important;
         padding: 0;
+        border-radius: 14px;
+        overflow: hidden;
         background-image: url("imagens/banner.jpg");
         background-size: cover;
         background-position: center center;
         background-repeat: no-repeat;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16);
     }
 
     .hero-overlay,
