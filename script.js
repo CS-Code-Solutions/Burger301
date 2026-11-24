@@ -447,7 +447,7 @@ function renderizarCardapio(produtos) {
             artigo.style.filter = "grayscale(100%) opacity(0.5)";
         }
 
-        const gifUrl = p.categoria === "hamburgueres" ? obterCaminhoGifPorImagem(p.imagem) : "";
+        const gifUrl = obterCaminhoGifPorImagem(p.imagem);
 
         artigo.innerHTML = `
             <div class="produto-imagem" style="position: relative;">
