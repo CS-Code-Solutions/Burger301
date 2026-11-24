@@ -1,6 +1,11 @@
 /* =========================================
-   CONFIGURAÇÕES GERAIS
+   CONFIGURAÇÕES GERAIS E TIPOGRAFIA
 ========================================= */
+
+:root {
+    --fonte-titulo: 'Archivo Black', sans-serif;
+    --fonte-corpo: 'DM Sans', Arial, Helvetica, sans-serif;
+}
 
 * {
     margin: 0;
@@ -13,7 +18,7 @@ html {
 }
 
 body {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: var(--fonte-corpo);
     background-color: #f5f5f5;
     background-image: url("imagens/fundo.jpg");
     background-size: cover;
@@ -32,7 +37,7 @@ body {
     z-index: 1000;
     background-color: #121212;
     border-bottom: 1px solid #222222;
-    padding: 8px 16px;
+    padding: 10px 16px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
     margin-bottom: 0 !important;
 }
@@ -54,11 +59,13 @@ body {
 }
 
 .logo-header {
-    font-size: 1.35rem;
-    font-weight: 800;
+    font-family: var(--fonte-titulo);
+    font-size: 1.32rem;
+    font-weight: 400;
     text-decoration: none !important;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.6px;
     white-space: nowrap;
+    line-height: 1;
 }
 
 .texto-burger {
@@ -74,8 +81,9 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    padding: 3px 8px;
+    padding: 3px 9px;
     border-radius: 20px;
+    font-family: var(--fonte-corpo);
     font-size: 0.72rem;
     font-weight: 700;
 }
@@ -170,8 +178,9 @@ body {
 }
 
 .hero-conteudo h1 {
-    font-size: 2.3rem;
-    font-weight: 900;
+    font-family: var(--fonte-titulo);
+    font-size: 2.2rem;
+    font-weight: 400;
     line-height: 1.25;
     margin-bottom: 14px;
     color: #ffffff;
@@ -263,12 +272,12 @@ body {
     border-radius: 10px;
     text-align: center;
     font-size: 16px;
-    font-weight: bold;
+    font-weight: 700;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 /* =========================================
-   CARDÁPIO
+   CARDÁPIO E CAIXAS DE SEÇÃO
 ========================================= */
 
 .cardapio {
@@ -280,34 +289,38 @@ body {
 .titulo-secao {
     text-align: center;
     margin: 15px 0 20px;
-    background-color: rgba(255, 255, 255, 0.92);
-    padding: 16px 20px;
-    border-radius: 12px;
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 18px 20px;
+    border-radius: 14px;
     box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
 }
 
 .titulo-secao h2 {
-    font-size: 32px;
-    margin-bottom: 8px;
+    font-family: var(--fonte-titulo);
+    font-size: 28px;
+    margin-bottom: 6px;
     color: #111;
-    font-weight: bold;
+    font-weight: 400;
+    letter-spacing: 0.3px;
+    line-height: 1.2;
 }
 
 .titulo-secao p {
-    color: #444;
-    font-size: 16px;
+    font-family: var(--fonte-corpo);
+    color: #555;
+    font-size: 15px;
     font-weight: 500;
 }
 
 /* =========================================
-   PRODUTOS
+   PRODUTOS (NOMES DOS HAMBÚRGUERES E PORÇÕES)
 ========================================= */
 
 .produto {
     background-color: white;
     display: flex;
     margin-bottom: 15px;
-    border-radius: 12px;
+    border-radius: 14px;
     overflow: hidden;
     box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
 }
@@ -329,31 +342,46 @@ body {
     padding: 25px;
 }
 
-.produto-informacoes h3 {
-    font-size: 24px;
+.produto-informacoes h3,
+#banners-promocoes-container h3 {
+    font-family: var(--fonte-titulo);
+    font-size: 22px;
+    font-weight: 400;
+    color: #111;
     margin-bottom: 8px;
+    letter-spacing: 0.2px;
+    line-height: 1.25;
+}
+
+#banners-promocoes-container h3 {
+    color: #ffffff;
 }
 
 .descricao {
-    color: #666;
+    font-family: var(--fonte-corpo);
+    color: #555;
+    font-size: 15px;
     margin-bottom: 15px;
 }
 
 .preco {
+    font-family: var(--fonte-corpo);
     font-size: 22px;
-    font-weight: bold;
+    font-weight: 800;
     color: #f28c28;
     margin-bottom: 15px;
 }
 
 .botao-adicionar {
+    font-family: var(--fonte-corpo);
     background-color: #111;
     color: white;
     border: none;
     padding: 11px 22px;
-    border-radius: 7px;
+    border-radius: 8px;
     cursor: pointer;
-    font-weight: bold;
+    font-weight: 700;
+    font-size: 15px;
     transition: 0.3s;
 }
 
@@ -422,6 +450,14 @@ body {
     box-sizing: border-box;
 }
 
+#modal-nome-produto {
+    font-family: var(--fonte-titulo);
+    font-weight: 400;
+    font-size: 21px;
+    padding-right: 26px;
+    margin-bottom: 6px;
+}
+
 .fechar-modal {
     position: absolute;
     top: 8px;
@@ -439,8 +475,9 @@ body {
     border-radius: 8px;
     background-color: #f28c28;
     color: white;
+    font-family: var(--fonte-corpo);
     font-size: 15px;
-    font-weight: bold;
+    font-weight: 700;
     cursor: pointer;
     transition: 0.3s;
     margin-top: 10px;
@@ -510,7 +547,9 @@ body {
 }
 
 .carrinho-cabecalho h2 {
-    font-size: 24px;
+    font-family: var(--fonte-titulo);
+    font-weight: 400;
+    font-size: 22px;
 }
 
 #quantidade-carrinho {
@@ -541,7 +580,9 @@ body {
 }
 
 .item-carrinho-info h3 {
-    font-size: 17px;
+    font-family: var(--fonte-titulo);
+    font-weight: 400;
+    font-size: 16px;
     margin-bottom: 7px;
 }
 
@@ -584,6 +625,7 @@ body {
 #valor-total {
     color: #f28c28;
     font-size: 24px;
+    font-weight: 800;
 }
 
 .carrinho-botoes {
@@ -600,7 +642,8 @@ body {
     border-radius: 8px;
     background-color: white;
     color: #111;
-    font-weight: bold;
+    font-family: var(--fonte-corpo);
+    font-weight: 700;
     cursor: pointer;
 }
 
@@ -611,7 +654,8 @@ body {
     border-radius: 8px;
     background-color: #f28c28;
     color: white;
-    font-weight: bold;
+    font-family: var(--fonte-corpo);
+    font-weight: 700;
     cursor: pointer;
 }
 
@@ -649,7 +693,8 @@ body {
     color: white;
     padding: 11px 18px;
     border-radius: 7px;
-    font-weight: bold;
+    font-family: var(--fonte-corpo);
+    font-weight: 700;
     cursor: pointer;
 }
 
@@ -708,7 +753,7 @@ body {
 
 .campo label {
     display: block;
-    font-weight: bold;
+    font-weight: 700;
     margin-bottom: 7px;
 }
 
@@ -744,12 +789,12 @@ body {
     border-radius: 8px;
     background-color: #f28c28;
     color: white;
+    font-family: var(--fonte-corpo);
     font-size: 16px;
-    font-weight: bold;
+    font-weight: 700;
     cursor: pointer;
 }
 
-/* Estilo para o botão de continuar comprando na tela de dados */
 .botao-voltar-cadastro {
     width: 100%;
     padding: 14px;
@@ -757,8 +802,9 @@ body {
     border-radius: 8px;
     background-color: #ffffff;
     color: #111;
+    font-family: var(--fonte-corpo);
     font-size: 16px;
-    font-weight: bold;
+    font-weight: 700;
     cursor: pointer;
     margin-top: 10px;
     transition: background-color 0.2s, color 0.2s;
@@ -783,7 +829,7 @@ body {
     color: white;
     padding: 14px 24px;
     border-radius: 10px;
-    font-weight: bold;
+    font-weight: 700;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     text-align: center;
     width: 90%;
@@ -791,66 +837,125 @@ body {
 }
 
 /* =========================================
-   RODAPÉ
+   RODAPÉ CENTRALIZADO E ORGANIZADO
 ========================================= */
 
 .rodape {
-    background-color: #111;
-    color: white;
+    background-color: #111111;
+    border-top: 1px solid #222222;
+    color: #ffffff;
     text-align: center;
-    padding: 25px 20px;
-    margin-top: 15px;
+    padding: 36px 20px 28px;
+    margin-top: 24px;
 }
 
-.rodape h2 {
-    font-size: 32px;
-    margin-bottom: 5px;
-    font-weight: bold;
+.rodape-container {
+    max-width: 540px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.rodape-logo {
+    font-family: var(--fonte-titulo);
+    font-size: 30px;
+    font-weight: 400;
+    letter-spacing: 0.8px;
+    line-height: 1.1;
+    margin-bottom: 6px;
 }
 
 .rodape .slogan-rodape {
-    font-size: 16px;
+    font-family: var(--fonte-corpo);
+    font-size: 15px;
     color: #f28c28;
-    margin: 0 0 8px;
-    font-weight: 500;
+    margin: 0 0 18px;
+    font-weight: 600;
+    font-style: italic;
 }
 
-.rodape p {
-    font-size: 15px;
-    margin: 5px 0;
-    color: #ccc;
+.rodape-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 22px;
+}
+
+.rodape-info p {
+    font-family: var(--fonte-corpo);
+    font-size: 14px;
+    margin: 0;
+    color: #d4d4d4;
+    line-height: 1.45;
+}
+
+.rodape-horario {
+    color: #ffffff !important;
+    font-weight: 600;
+}
+
+/* Botões circulares padrão WhatsApp e Instagram (apenas ícone) */
+.rodape-redes {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    margin-bottom: 24px;
+}
+
+.botao-social-icone {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: #ffffff;
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.botao-social-icone svg {
+    width: 26px;
+    height: 26px;
+    fill: #ffffff;
+    display: block;
+}
+
+.botao-whatsapp-icone {
+    background-color: #25d366;
+    box-shadow: 0 4px 14px rgba(37, 211, 102, 0.35);
+}
+
+.botao-instagram-icone {
+    background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+    box-shadow: 0 4px 14px rgba(214, 36, 159, 0.35);
+}
+
+.botao-social-icone:hover {
+    transform: translateY(-3px) scale(1.06);
 }
 
 .rodape .copyright {
-    margin-top: 15px;
-    padding-top: 15px;
-    border-top: 1px solid rgba(242, 140, 40, 0.35);
-    color: #f28c28;
-    font-size: 13px;
+    width: 100%;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    color: #888888;
+    font-size: 12.5px;
     font-weight: 500;
+    margin: 0;
 }
 
-/* =========================================
-   BOTÃO DE DÚVIDAS NO WHATSAPP (RODAPÉ)
-========================================= */
-
-.botao-duvidas-whatsapp {
-    display: inline-block;
-    margin: 15px 0;
-    padding: 10px 20px;
-    background-color: #25d366;
-    color: white;
+.rodape .copyright a {
+    color: #f28c28;
     text-decoration: none;
-    font-weight: bold;
-    border-radius: 8px;
-    font-size: 14px;
-    transition: 0.3s ease;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    font-weight: 700;
 }
 
-.botao-duvidas-whatsapp:hover {
-    background-color: #1eb954;
-    transform: translateY(-2px);
+.rodape .copyright a:hover {
+    text-decoration: underline;
 }
 
 /* =========================================
@@ -861,11 +966,11 @@ body {
 
     /* Cabeçalho Ajustado no Telemóvel */
     .logo-header {
-        font-size: 1.18rem;
+        font-size: 1.15rem;
     }
 
     .status-loja {
-        padding: 2px 6px;
+        padding: 2px 7px;
         font-size: 0.68rem;
     }
 
@@ -895,7 +1000,7 @@ body {
         z-index: 2;
         display: flex;
         flex-direction: column;
-        justify-content: space-between; 
+        justify-content: space-between;
         align-items: center;
         width: 100%;
         height: 100%;
@@ -927,7 +1032,16 @@ body {
     .titulo-secao {
         margin-top: 30px !important;
         margin-bottom: 15px !important;
+        padding: 16px 14px;
         clear: both;
+    }
+
+    .titulo-secao h2 {
+        font-size: 24px;
+    }
+
+    .titulo-secao p {
+        font-size: 14px;
     }
 
     /* Aplica alinhamento ao primeiro título (Hambúrgueres) */
@@ -947,7 +1061,11 @@ body {
     }
 
     .produto-informacoes {
-        padding: 15px;
+        padding: 16px;
+    }
+
+    .produto-informacoes h3 {
+        font-size: 20px;
     }
 }
 
@@ -955,16 +1073,15 @@ body {
    CORREÇÃO FINAL: CARRINHO FLUTUANTE MOBILE
 ========================================= */
 @media (max-width: 768px) {
-    /* Ajusta o container principal da barra flutuante no celular */
     .carrinho-flutuante {
         display: flex !important;
         align-items: center;
         justify-content: space-between;
-        padding: 12px 16px !important; 
-        width: calc(100% - 32px) !important; 
+        padding: 12px 16px !important;
+        width: calc(100% - 32px) !important;
         left: 50% !important;
         transform: translate(-50%, 150px);
-        font-size: 0.9rem !important; 
+        font-size: 0.9rem !important;
         gap: 10px;
     }
 
@@ -972,13 +1089,13 @@ body {
         transform: translate(-50%, 0) !important;
     }
 
-    /* Ajusta o botão "VER PEDIDO" no celular */
     #abrir-carrinho {
         padding: 10px 14px !important;
         font-size: 0.85rem !important;
-        white-space: nowrap; 
+        white-space: nowrap;
     }
 }
+
 /* =========================================
    BOTÃO HAMBÚRGUER (MENU SUPERIOR DIREITO)
 ========================================= */
@@ -1050,8 +1167,9 @@ body {
 .menu-lista li a {
     color: #fff;
     text-decoration: none;
+    font-family: var(--fonte-corpo);
     font-size: 16px;
-    font-weight: bold;
+    font-weight: 700;
     display: block;
     padding: 12px 15px;
     background: #252525;
