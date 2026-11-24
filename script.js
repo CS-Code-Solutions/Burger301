@@ -45,6 +45,54 @@ let timerCongelarBannerMobile = null;
 // Cache do primeiro quadro congelado de cada GIF para iniciar estático sem duplicar imagem
 const cachePrimeiroQuadroGif = new Map();
 
+function injetarEstiloIconePlayGif() {
+    if (document.getElementById("estilo-icone-play-gif")) return;
+    const style = document.createElement("style");
+    style.id = "estilo-icone-play-gif";
+    style.textContent = `
+        .icone-play-gif {
+            position: absolute;
+            right: 8px;
+            bottom: 8px;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.72);
+            color: #ffffff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            line-height: 1;
+            z-index: 3;
+            pointer-events: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+        }
+        .icone-play-gif.ativo {
+            background: rgba(242, 140, 40, 0.92);
+            color: #ffffff;
+            font-size: 10px;
+            letter-spacing: -1px;
+        }
+    `;
+    document.head.appendChild(style);
+}
+injetarEstiloIconePlayGif();
+
+function atualizarEstadoVisualPlayCard(card, rodando) {
+    if (!card) return;
+    const badge = card.querySelector(".icone-play-gif");
+    if (!badge) return;
+    if (rodando) {
+        badge.classList.add("ativo");
+        badge.textContent = "❚❚";
+    } else {
+        badge.classList.remove("ativo");
+        badge.textContent = "▶";
+    }
+}
+
 function obterCaminhoGifPorImagem(caminhoImagem) {
     if (!caminhoImagem) return "";
     const semQuery = String(caminhoImagem).split("?")[0];
@@ -70,7 +118,7 @@ function congelarImagemEmDataUrl(imgElement, fallbackUrl) {
     }
 }
 
-function bloquearGifNoCard(img) {
+function bloquearGifNoCard(img, card) {
     if (!img) return;
     img.dataset.gifLiberado = "false";
     img.dataset.gifAtivo = "false";
@@ -78,6 +126,7 @@ function bloquearGifNoCard(img) {
     if (frameEstatico && img.src !== frameEstatico) {
         img.src = frameEstatico;
     }
+    atualizarEstadoVisualPlayCard(card || img.closest(".produto"), false);
 }
 
 function prepararFrameEstaticoBloqueado(img, gifUrl, fallbackImagem) {
@@ -435,7 +484,7 @@ function congelarCardGif(card) {
     if (!card) return;
     const img = card.querySelector(".produto-imagem img");
     if (!img) return;
-    bloquearGifNoCard(img);
+    bloquearGifNoCard(img, card);
 }
 
 function configurarCliqueGifNosCards() {
@@ -473,9 +522,10 @@ function configurarCliqueGifNosCards() {
                 if (img.dataset.gifLiberado !== "true") return;
                 img.src = `${gifUrl}?t=${Date.now()}`;
                 img.dataset.gifAtivo = "true";
+                atualizarEstadoVisualPlayCard(card, true);
             };
             testeGif.onerror = () => {
-                bloquearGifNoCard(img);
+                bloquearGifNoCard(img, card);
                 if (fallbackImagem) {
                     img.src = fallbackImagem;
                 }
@@ -508,6 +558,7 @@ function renderizarCardapio(produtos) {
         artigo.innerHTML = `
             <div class="produto-imagem" style="position: relative;">
                 <img src="${srcInicial}" alt="${p.nome}" data-fallback-imagem="${p.imagem}" data-gif-url="${gifUrl}" data-frame-estatico="${srcInicial}" data-gif-liberado="false" data-gif-ativo="false">
+                <span class="icone-play-gif" aria-hidden="true">▶</span>
                 ${p.esgotado ? '<span class="selo-esgotado" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.85); color: #fff; padding: 6px 14px; border-radius: 5px; font-weight: bold; font-size: 14px; z-index: 2;">ESGOTADO</span>' : ''}
             </div>
             <div class="produto-informacoes">
