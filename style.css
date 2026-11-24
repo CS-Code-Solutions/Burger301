@@ -169,21 +169,6 @@ body {
     color: #ffffff;
 }
 
-.badge-exclusivo {
-    display: inline-block;
-    background-color: rgba(0, 0, 0, 0.65);
-    color: #f28c28;
-    border: 1px solid rgba(242, 140, 40, 0.8);
-    padding: 6px 16px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    margin-bottom: 16px;
-    text-transform: uppercase;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.6);
-}
-
 .hero-conteudo h1 {
     font-size: 2.3rem;
     font-weight: 900;
@@ -206,33 +191,6 @@ body {
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.95);
 }
 
-.btn-hero-principal {
-    display: inline-block;
-    background-color: #f28c28;
-    color: #ffffff !important;
-    text-decoration: none !important;
-    padding: 15px 34px;
-    border-radius: 8px;
-    font-size: 1.1rem;
-    font-weight: 800;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
-    transition: transform 0.2s, background-color 0.2s;
-    letter-spacing: 0.5px;
-}
-
-.btn-hero-principal:hover {
-    background-color: #d96f0c;
-    transform: translateY(-2px);
-}
-
-/* Sombra e Destaque para o Emoji dentro do Botão */
-.icone-emoji {
-    display: inline-block;
-    filter: drop-shadow(0px 2px 5px rgba(0, 0, 0, 0.75));
-    margin-right: 6px;
-    transform: translateY(1px);
-}
-
 .hero-diferenciais {
     display: flex;
     align-items: center;
@@ -243,6 +201,45 @@ body {
     color: #ffffff;
     font-weight: 700;
     text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+}
+
+/* Figurinha Flutuante no Canto Inferior Direito do Banner */
+.figurinha-pedido-flutuante {
+    position: absolute;
+    right: 16px;
+    bottom: 14px;
+    z-index: 3;
+    width: 96px;
+    height: 96px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.75));
+    transition: transform 0.22s ease, filter 0.22s ease;
+    animation: flutuarFigurinha 2.6s ease-in-out infinite;
+}
+
+.figurinha-pedido-flutuante img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    pointer-events: none;
+}
+
+.figurinha-pedido-flutuante:hover {
+    transform: translateY(-4px) scale(1.05);
+    filter: drop-shadow(0 10px 18px rgba(242, 140, 40, 0.55));
+}
+
+@keyframes flutuarFigurinha {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
 }
 
 /* =========================================
@@ -888,7 +885,7 @@ body {
     }
 
     .hero-overlay {
-        background: rgba(0, 0, 0, 0.02); /* Cortina praticamente removida para total clareza */
+        background: rgba(0, 0, 0, 0.02);
     }
 
     .hero-conteudo {
@@ -912,29 +909,12 @@ body {
         display: none !important;
     }
 
-    /* Badge Exclusivo no topo */
-    .badge-exclusivo {
-        font-size: 0.65rem;
-        padding: 5px 12px;
-        margin-top: 2px;
-        background-color: rgba(18, 18, 18, 0.9);
-        border: 1px solid rgba(242, 140, 40, 0.8);
-    }
-
-    /* Botão posicionado praticamente no limite inferior do banner */
-    .btn-hero-principal {
-        position: relative !important;
-        bottom: auto !important;
-        left: auto !important;
-        transform: none !important;
-        display: block;
-        width: 100%;
-        max-width: 320px;
-        padding: 12px 20px;
-        font-size: 0.92rem;
-        box-sizing: border-box;
-        text-align: center;
-        margin-bottom: 0px; /* Colado no limite final */
+    /* Figurinha Flutuante no Canto Inferior Direito no Celular */
+    .figurinha-pedido-flutuante {
+        right: 12px;
+        bottom: 12px;
+        width: 82px;
+        height: 82px;
     }
 
     .cardapio {
