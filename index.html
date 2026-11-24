@@ -1,2148 +1,385 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Administrativo - Burger 301</title>
-    <!-- METATAGS DE PRÉ-VISUALIZAÇÃO PARA WHATSAPP E REDES SOCIAIS -->
-    <meta name="description" content="Painel administrativo exclusivo do Burger 301 para gestão de produtos, promoções e pedidos.">
-    
-    <!-- Open Graph (WhatsApp, Facebook, LinkedIn) -->
+    <title>Burger 301 - Hambúrgueres artesanais</title>
+
+    <!-- METATAGS DE SEO E PRE-VISUALIZACAO OPEN GRAPH (WHATSAPP E REDES SOCIAIS) -->
+    <meta name="description" content="Burger 301 - Hambúrgueres artesanais, porções e adicionais fresquinhos. Faça o seu pedido online direto na sua torre!">
     <meta property="og:type" content="website">
-    <meta property="og:site_name" content="Burger 301 - Admin">
-    <meta property="og:title" content="Painel Administrativo - Burger 301">
-    <meta property="og:description" content="Área restrita de gestão de cardápio, adicionais e status da loja.">
-    <meta property="og:url" content="https://burger301.vercel.app/admin/admin.html">
+    <meta property="og:site_name" content="Burger 301">
+    <meta property="og:title" content="Burger 301 - Hambúrgueres Artesanais">
+    <meta property="og:description" content="Peça os melhores hambúrgueres artesanais e porções direto pelo nosso cardápio online!">
+    <meta property="og:url" content="https://burger301.vercel.app/">
     <meta property="og:image" content="https://burger301.vercel.app/1200x630.jpg">
     <meta property="og:image:secure_url" content="https://burger301.vercel.app/1200x630.jpg">
-    <meta property="og:image:type" content="image/jpeg">
+    <meta property="og:image:type" content="image/jpg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
 
     <!-- TWITTER CARDS -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Painel Administrativo - Burger 301">
-    <meta name="twitter:description" content="Área restrita de gestão de cardápio, adicionais e status da loja.">
-    <meta name="twitter:image" content="https://burger301.vercel.app/1200x630.jpg">
+    <meta name="twitter:title" content="Burger 301 - Hambúrgueres Artesanais">
+    <meta name="twitter:description" content="Peça os melhores hambúrgueres artesanais e porções direto pelo nosso cardápio online!">
+    <meta name="twitter:image" content="https://burger301.vercel.app/imagens/banner.jpg">
 
-    <!-- CONFIGURAÇÕES DE PWA (APLICAÇÃO INSTALÁVEL INDEPENDENTE) -->
+    <!-- INSTRUÇÕES PARA IMPEDIR CACHE ANTIGO NOS CELULARES -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <!-- CONFIGURAÇÕES DE APLICAÇÃO INSTALÁVEL (PWA) -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#f28c28">
-    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Admin 301">
-    
-    <!-- FAVICON -->
-    <link rel="icon" href="../imagens/icone.png" type="image/png">
+    <meta name="apple-mobile-web-app-title" content="Burger 301">
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #121212;
-            color: #fff;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-            box-sizing: border-box;
-            transition: background-color 0.25s, color 0.25s;
-        }
+    <!-- GOOGLE FONTS: ARCHIVO BLACK + DM SANS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=DM+Sans:ital,opsz,wght@0,9..40,400..800;1,9..40,400..800&display=swap" rel="stylesheet">
 
-        /* TELA DE LOGIN - PADRÃO COMPUTADOR (DESKTOP) */
-        #tela-login {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            height: 100dvh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 999;
-            padding: 15px;
-            box-sizing: border-box;
-            background-color: #121212;
-            background-image: url('../imagens/banner.jpg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-        }
+    <link rel="stylesheet" href="style.css?v=11">
 
-        /* IMAGEM DO BANNER (OCULTA NO PC, VISÍVEL APENAS NO TELEMÓVEL) */
-        #bg-login-img {
-            display: none;
-        }
-
-        /* CAMADA ESCURA PARA DESTACAR O CARTÃO NO PC */
-        #tela-login::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.55);
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        .login-card {
-            position: relative;
-            z-index: 2;
-            background: rgba(25, 25, 25, 0.9);
-            padding: 30px 20px;
-            border-radius: 16px;
-            width: 100%;
-            max-width: 380px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            border: 1px solid rgba(242, 140, 40, 0.4);
-            backdrop-filter: blur(6px);
-        }
-
-        /* LOGO SEM CÍRCULO */
-        .logo-login-sem-circulo {
-            width: 76px;
-            height: 76px;
-            object-fit: contain;
-            border-radius: 0;
-            border: none;
-            box-shadow: none;
-            margin-bottom: 10px;
-            display: inline-block;
-        }
-
-        .botoes-login-grupo {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .btn-biometria-login {
-            background-color: #f28c28;
-            color: #fff;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            box-shadow: 0 4px 14px rgba(242, 140, 40, 0.35);
-        }
-
-        .btn-biometria-login:hover {
-            background-color: #d96f0c;
-        }
-
-        .btn-trocar-conta {
-            background: transparent;
-            border: none;
-            color: #aaa;
-            font-size: 12px;
-            text-decoration: underline;
-            padding: 6px;
-            margin-top: 4px;
-            cursor: pointer;
-            font-weight: normal;
-        }
-
-        .btn-trocar-conta:hover {
-            background: transparent;
-            color: #fff;
-        }
-
-        .status-biometria-texto {
-            font-size: 12px;
-            color: #bbb;
-            margin-top: 10px;
-            line-height: 1.4;
-        }
-
-        /* AJUSTE AUTOMÁTICO PARA TELEMÓVEIS (VERSÃO EMPILHADA) */
-        @media (max-width: 768px) {
-            #tela-login {
-                background-image: none !important;
-                flex-direction: column;
-                justify-content: center;
-                overflow-y: auto;
-                padding: 20px 15px;
-            }
-
-            #tela-login::after {
-                display: none;
-            }
-
-            #bg-login-img {
-                display: block;
-                width: 100%;
-                max-width: 440px;
-                height: auto;
-                max-height: 50vh;
-                object-fit: contain;
-                border-radius: 12px;
-                margin-bottom: 12px;
-                box-shadow: 0 6px 20px rgba(0,0,0,0.6);
-                z-index: 2;
-            }
-
-            .login-card {
-                background: rgba(25, 25, 25, 0.95);
-                max-width: 400px;
-                padding: 25px 20px;
-                backdrop-filter: none;
-            }
-        }
-
-        .container {
-            width: 100%;
-            max-width: 500px;
-            background: #1e1e1e;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-            height: fit-content;
-            position: relative;
-            transition: background-color 0.25s, box-shadow 0.25s;
-        }
-        
-        /* BOTÃO DE INSTALAÇÃO NO PAINEL */
-        #btn-instalar {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: #2a2a2a;
-            border: 1px solid #444;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            color: #f28c28;
-            padding: 5px 9px;
-            transition: transform 0.2s, background-color 0.2s;
-            width: auto;
-            z-index: 10;
-        }
-        #btn-instalar:hover {
-            transform: scale(1.06);
-            background: #383838;
-        }
-
-        /* BOTÃO DE TEMA CLARO / ESCURO */
-        #btn-tema-admin {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            background: #2a2a2a;
-            border: 1px solid #444;
-            font-size: 16px;
-            cursor: pointer;
-            color: #fff;
-            padding: 5px 9px;
-            border-radius: 8px;
-            transition: transform 0.2s, background-color 0.2s;
-            width: auto;
-            z-index: 10;
-        }
-        #btn-tema-admin:hover {
-            transform: scale(1.06);
-            background: #383838;
-        }
-
-        h2 { color: #f28c28; text-align: center; margin-bottom: 20px; }
-        .campo { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
-        input, select, textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #333;
-            border-radius: 6px;
-            background: #2a2a2a;
-            color: #fff;
-            font-size: 15px;
-            box-sizing: border-box;
-        }
-        button {
-            width: 100%;
-            padding: 12px;
-            background-color: #f28c28;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        button:hover { background-color: #d96f0c; }
-        .painel-conteudo { display: none; }
-        
-        .status-box {
-            background: #2a2a2a;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-        .botoes-modo-loja {
-            display: flex;
-            gap: 6px;
-            margin-top: 8px;
-        }
-        .btn-modo {
-            flex: 1;
-            padding: 10px 6px;
-            border-radius: 6px;
-            font-weight: bold;
-            font-size: 12px;
-            cursor: pointer;
-            border: 1px solid #444;
-            background: #222;
-            color: #aaa;
-            text-align: center;
-            transition: all 0.2s;
-        }
-        .btn-modo.ativo {
-            background-color: #f28c28;
-            color: white;
-            border-color: #f28c28;
-        }
-
-        .biometria-acoes {
-            display: flex;
-            gap: 8px;
-            margin-top: 10px;
-        }
-        .biometria-acoes button {
-            font-size: 13px;
-            padding: 10px;
-        }
-        
-        .abas-admin {
-            display: flex;
-            gap: 5px;
-            margin-bottom: 15px;
-        }
-        .btn-aba {
-            flex: 1;
-            padding: 10px;
-            background: #2a2a2a;
-            color: #aaa;
-            border: none;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .btn-aba.ativa {
-            background: #f28c28;
-            color: #fff;
-        }
-
-        .secao-painel {
-            background: #252525;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-        .secao-painel h3 { color: #f28c28; margin-top: 0; font-size: 16px; border-bottom: 1px solid #333; padding-bottom: 8px; }
-        
-        .lista-admin-produtos {
-            max-height: 320px;
-            overflow-y: auto;
-            margin-top: 10px;
-        }
-        .item-admin-produto {
-            background: #2a2a2a;
-            padding: 10px;
-            border-radius: 6px;
-            margin-bottom: 10px;
-            font-size: 14px;
-        }
-        .item-topo {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-        .item-botoes {
-            display: flex;
-            gap: 4px;
-            align-items: center;
-        }
-        .msg { text-align: center; margin-top: 10px; font-size: 14px; color: #4ade80; }
-
-        /* CARDS DE TEMAS DO BANNER MOBILE */
-        .grid-banners-mobile {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-top: 12px;
-            max-height: 360px;
-            overflow-y: auto;
-        }
-        .card-banner-tema {
-            background: #1a1a1a;
-            border: 2px solid #333;
-            border-radius: 8px;
-            overflow: hidden;
-            cursor: pointer;
-            transition: border-color 0.2s, transform 0.15s;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-        .card-banner-tema:hover {
-            transform: translateY(-2px);
-            border-color: #f28c28;
-        }
-        .card-banner-tema.ativo {
-            border-color: #22c55e;
-            box-shadow: 0 0 10px rgba(34, 197, 94, 0.35);
-        }
-        .card-banner-tema img {
-            width: 100%;
-            height: 130px;
-            object-fit: cover;
-            display: block;
-            background: #111;
-        }
-        .card-banner-info {
-            padding: 8px;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            flex: 1;
-            justify-content: space-between;
-        }
-        .card-banner-nome {
-            font-size: 12px;
-            font-weight: bold;
-            color: #fff;
-            word-break: break-word;
-        }
-        .badge-banner-status {
-            font-size: 10px;
-            font-weight: bold;
-            padding: 3px 6px;
-            border-radius: 4px;
-            text-align: center;
-            background: #333;
-            color: #ccc;
-        }
-        .card-banner-tema.ativo .badge-banner-status {
-            background: #22c55e;
-            color: #fff;
-        }
-        .card-banner-acoes {
-            position: absolute;
-            top: 6px;
-            right: 6px;
-            display: flex;
-            gap: 5px;
-            z-index: 3;
-        }
-        .btn-editar-banner,
-        .btn-excluir-banner {
-            width: 26px !important;
-            height: 26px !important;
-            padding: 0 !important;
-            color: #fff;
-            border-radius: 50%;
-            font-size: 12px !important;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: none;
-            cursor: pointer;
-        }
-        .btn-editar-banner {
-            background: rgba(59, 130, 246, 0.92) !important;
-        }
-        .btn-excluir-banner {
-            background: rgba(239, 68, 68, 0.92) !important;
-        }
-
-        /* =========================================
-           TEMA CLARO DO PAINEL ADMIN
-        ========================================= */
-        body.tema-claro {
-            background-color: #eef0f4;
-            color: #1f2937;
-        }
-        body.tema-claro .container {
-            background: #ffffff !important;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        }
-        body.tema-claro #btn-tema-admin,
-        body.tema-claro #btn-instalar {
-            background: #f3f4f6;
-            border-color: #d1d5db;
-            color: #111827;
-        }
-        body.tema-claro .secao-painel {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-        }
-        body.tema-claro .secao-painel h3 {
-            border-bottom-color: #e2e8f0;
-        }
-        body.tema-claro .status-box,
-        body.tema-claro .item-admin-produto {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            color: #1f2937;
-        }
-        body.tema-claro #container-form-whatsapp,
-        body.tema-claro #container-form-promo,
-        body.tema-claro #container-form-produto,
-        body.tema-claro #container-banner-mobile {
-            background: #f1f5f9 !important;
-            border-color: #cbd5e1 !important;
-        }
-        body.tema-claro #lista-admin-promocoes {
-            background: #ffffff !important;
-            border: 1px solid #e2e8f0;
-        }
-        body.tema-claro input,
-        body.tema-claro select,
-        body.tema-claro textarea {
-            background: #ffffff;
-            border-color: #cbd5e1;
-            color: #111827;
-        }
-        body.tema-claro .btn-modo {
-            background: #f1f5f9;
-            border-color: #cbd5e1;
-            color: #475569;
-        }
-        body.tema-claro .btn-modo.ativo {
-            background-color: #f28c28;
-            color: #ffffff;
-            border-color: #f28c28;
-        }
-        body.tema-claro .btn-aba {
-            background: #e2e8f0;
-            color: #475569;
-        }
-        body.tema-claro .btn-aba.ativa {
-            background: #f28c28;
-            color: #ffffff;
-        }
-        body.tema-claro .card-banner-tema {
-            background: #ffffff;
-            border-color: #cbd5e1;
-        }
-        body.tema-claro .card-banner-nome {
-            color: #1f2937;
-        }
-        body.tema-claro .badge-banner-status {
-            background: #e2e8f0;
-            color: #475569;
-        }
-        body.tema-claro .card-banner-tema.ativo .badge-banner-status {
-            background: #22c55e;
-            color: #ffffff;
-        }
-
-        #modal-ajuda-img {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            padding: 15px;
-            box-sizing: border-box;
-        }
-        .modal-ajuda-conteudo {
-            background: #222;
-            padding: 20px;
-            border-radius: 8px;
-            width: 100%;
-            max-width: 400px;
-            position: relative;
-            border: 1px solid #444;
-        }
-        .btn-fechar-ajuda {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: transparent;
-            border: none;
-            color: #fff;
-            font-size: 18px;
-            cursor: pointer;
-            width: auto;
-            padding: 5px;
-        }
-    </style>
+    <!-- FAVICON (ÍCONE DA ABA DO NAVEGADOR)-->
+    <link rel="icon" href="imagens/icone.png" type="image/png">
 </head>
+
 <body>
 
-    <!-- TELA DE LOGIN RESPONSIVA -->
-    <div id="tela-login">
-        <!-- Imagem exibida apenas em telemóveis -->
-        <img id="bg-login-img" src="../imagens/banner.jpg" alt="Banner Burger 301">
-        
-        <div class="login-card">
-            <img src="../imagens/icone.png" alt="Logo Burger 301" class="logo-login-sem-circulo">
-            <h2 style="margin-top: 0; margin-bottom: 18px; font-size: 18px;">Área Restrita</h2>
-            
-            <div class="botoes-login-grupo">
-                <!-- Botão Principal de Login por Biometria (Digital / Face ID) -->
-                <button type="button" id="btn-login-biometria" class="btn-biometria-login" style="display: none;">
-                    <span>🔐</span>
-                    <span>Entrar com Digital / Face ID</span>
+    <!-- CABEÇALHO SUPERIOR FIXO -->
+    <header class="header-topo">
+        <div class="header-container">
+
+            <!-- ESQUERDA: LOGO + STATUS -->
+            <div class="header-esquerda">
+                <a href="#" class="logo-header">
+                    <span class="texto-burger">BURGER</span> <span class="texto-301">301</span>
+                </a>
+
+                <!-- BADGE DE STATUS (ABERTO / FECHADO) -->
+                <div class="status-loja status-aberto">
+                    <span class="ponto-status"></span>
+                    <span>Aberto</span>
+                </div>
+            </div>
+
+            <!-- LINK OCULTO PARA EVITAR ERRO NO SCRIPT.JS -->
+            <a href="#cardapio" class="link-cardapio" style="display: none;">Cardápio</a>
+
+            <!-- DIREITA: MENU HAMBÚRGUER -->
+            <div class="header-direita">
+                <button type="button" id="btn-menu-toggle" class="btn-menu-hamburguer" aria-label="Abrir Menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
                 </button>
-
-                <!-- Botão de Login com a Google -->
-                <button type="button" id="btn-login-google" style="background-color: #db4437; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px;">
-                    <svg style="width:18px;height:18px" viewBox="0 0 24 24"><path fill="#ffffff" d="M21.35,11.1H12.18V13.83H18.69C18.36,17.64 15.19,19.27 12.19,19.27C8.36,19.27 5,16.25 5,12C5,7.9 8.2,4.73 12.19,4.73C14.07,4.73 15.55,5.37 16.68,6.48L18.7,4.45C17.08,2.97 14.85,2 12.19,2C6.74,2 2.24,6.5 2.24,12C2.24,17.5 6.74,22 12.19,22C17.64,22 21.34,18.15 21.34,12.5C21.34,11.97 21.29,11.53 21.35,11.1Z"/></svg>
-                    <span id="texto-btn-google">Entrar com Conta Google</span>
-                </button>
             </div>
 
-            <p id="status-biometria-login" class="status-biometria-texto"></p>
-            <button type="button" id="btn-trocar-conta" class="btn-trocar-conta" style="display: none;">Sair da conta Google vinculada</button>
-            <p id="erro-login" style="color: #ef4444; text-align: center; margin-top: 10px; font-size: 13px; word-break: break-word;"></p>
-            
-            <p style="font-size: 0.75rem; color: #ccc; text-align: center; margin-top: 20px; margin-bottom: 4px;">
-                © 2026 Burger 301 Todos os direitos reservados.
-            </p>
-            <p style="font-size: 0.72rem; color: #aaa; text-align: center; margin-top: 6px; letter-spacing: 0.5px;">
-                Powered by <a href="https://www.instagram.com/cs_code_solutions?exln=Ym1mNDMzYTYxa3d6" target="_blank" style="color: #f28c28; text-decoration: none; font-weight: bold;">CS Code Solutions</a>
+        </div>
+    </header>
+
+    <!-- MENU LATERAL / GAVETA -->
+    <nav id="menu-lateral" class="menu-lateral">
+        <button type="button" id="btn-fechar-menu" class="btn-fechar-menu">✕</button>
+        <ul class="menu-lista">
+            <li><a href="#" onclick="fecharMenuEColar('hamburgueres')">🍔 Hambúrgueres</a></li>
+            <li><a href="#" onclick="fecharMenuEColar('porcoes')">🍟 Porções</a></li>
+            <li><a href="#" onclick="fecharMenuEColar('rodape-duvidas')">❓ Dúvidas</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <!-- BANNER HERO DE ALTA CONVERSÃO -->
+        <section class="banner-hero">
+            <div class="hero-overlay"></div>
+            <div class="hero-conteudo">
+                <h1>Hambúrguer artesanal <br><span class="destaque-laranja">entregue direto na sua torre.</span></h1>
+
+                <div class="hero-diferenciais">
+                    <span>⚡ Entrega rápida na torre</span>
+                    <span>•</span>
+                    <span>🥩 Blend 100% bovino</span>
+                </div>
+            </div>
+
+            <!-- FIGURINHA FLUTUANTE DE ATALHO PARA PEDIDO -->
+            <a href="#cardapio" class="figurinha-pedido-flutuante" aria-label="Fazer pedido agora" title="Fazer pedido agora">
+                <img src="imagens/figurinha-pedido.png" alt="Fazer pedido agora - Burger 301">
+            </a>
+        </section>
+
+        <!-- CARDÁPIO -->
+        <section id="cardapio" class="cardapio">
+
+            <!-- HAMBÚRGUERES -->
+            <div id="hamburgueres" class="titulo-secao">
+                <h2>🍔 Hambúrgueres</h2>
+                <p>Escolha seu hambúrguer e personalize com nossos adicionais.</p>
+            </div>
+
+            <!-- CONTAINER DINÂMICO DE HAMBÚRGUERES (ALIMENTADO PELO FIREBASE) -->
+            <div id="lista-hamburgueres">
+                <!-- Os produtos serão injetados aqui automaticamente -->
+            </div>
+
+            <!-- PORÇÕES -->
+            <div id="porcoes" class="titulo-secao">
+                <h2>🍟 Porções</h2>
+                <p>Complete seu pedido com nossas porções.</p>
+            </div>
+
+            <!-- CONTAINER DINÂMICO DE PORÇÕES (ALIMENTADO PELO FIREBASE) -->
+            <div id="lista-porcoes">
+                <!-- As porções serão injetadas aqui automaticamente -->
+            </div>
+
+        </section>
+
+        <!-- MODAL DE PERSONALIZAÇÃO -->
+        <div id="modal-produto" class="modal" aria-hidden="true">
+            <div class="modal-conteudo">
+                <button type="button" id="fechar-modal" class="fechar-modal" aria-label="Fechar">×</button>
+
+                <h2 id="modal-nome-produto">Personalizar pedido</h2>
+                <p id="modal-descricao-produto" class="modal-descricao"></p>
+
+                <div class="modal-preco">
+                    <span>Preço:</span>
+                    <strong id="modal-preco-produto">R$ 0,00</strong>
+                </div>
+
+                <!-- ADICIONAIS -->
+                <div class="modal-secao">
+                    <h3>➕ Adicionais</h3>
+                    <p class="texto-ajuda">Selecione os adicionais desejados.</p>
+
+                    <div class="lista-adicionais">
+                        <label class="adicional">
+                            <input type="checkbox" name="adicional" value="Bacon" data-preco="5.00">
+                            <span>Bacon</span>
+                            <strong>+ R$ 5,00</strong>
+                        </label>
+
+                        <label class="adicional">
+                            <input type="checkbox" name="adicional" value="Cebola caramelizada" data-preco="4.00">
+                            <span>Cebola caramelizada</span>
+                            <strong>+ R$ 4,00</strong>
+                        </label>
+
+                        <label class="adicional">
+                            <input type="checkbox" name="adicional" value="Abacaxi grelhado" data-preco="4.00">
+                            <span>Abacaxi grelhado</span>
+                            <strong>+ R$ 4,00</strong>
+                        </label>
+
+                        <label class="adicional">
+                            <input type="checkbox" name="adicional" value="Blend bovino 150g" data-preco="8.00">
+                            <span>Blend bovino 150g</span>
+                            <strong>+ R$ 8,00</strong>
+                        </label>
+
+                        <label class="adicional">
+                            <input type="checkbox" name="adicional" value="Smash bovino 75g" data-preco="5.00">
+                            <span>Smash bovino 75g</span>
+                            <strong>+ R$ 5,00</strong>
+                        </label>
+
+                        <label class="adicional">
+                            <input type="checkbox" name="adicional" value="Queijo cheddar" data-preco="6.00">
+                            <span>Queijo cheddar</span>
+                            <strong>+ R$ 6,00</strong>
+                        </label>
+
+                        <label class="adicional">
+                            <input type="checkbox" name="adicional" value="Queijo mussarela" data-preco="4.00">
+                            <span>Queijo mussarela</span>
+                            <strong>+ R$ 4,00</strong>
+                        </label>
+
+                        <label class="adicional">
+                            <input type="checkbox" name="adicional" value="Anéis de cebola" data-preco="4.00">
+                            <span>Anéis de cebola</span>
+                            <strong>+ R$ 4,00</strong>
+                        </label>
+
+                        <label class="adicional">
+                            <input type="checkbox" name="adicional" value="Pote de maionese extra" data-preco="2.00" data-apenas-porcao="true">
+                            <span>Pote de maionese extra</span>
+                            <strong>+ R$ 2,00</strong>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- QUANTIDADE -->
+                <div class="modal-secao quantidade-secao">
+                    <h3>Quantidade</h3>
+                    <div class="controle-quantidade">
+                        <button type="button" id="diminuir-quantidade">−</button>
+                        <span id="quantidade-produto">1</span>
+                        <button type="button" id="aumentar-quantidade">+</button>
+                    </div>
+                </div>
+
+                <!-- OBSERVAÇÃO DO PRODUTO -->
+                <div class="modal-secao">
+                    <h3>📝 Observação</h3>
+                    <textarea id="observacao-produto" class="observacao-produto" placeholder="Ex.: sem cebola, pouca maionese, bem passado..." rows="3"></textarea>
+                </div>
+
+                <!-- TOTAL -->
+                <div class="modal-total">
+                    <span>Total:</span>
+                    <strong id="modal-total">R$ 0,00</strong>
+                </div>
+
+                <button type="button" id="adicionar-carrinho-modal" class="botao-confirmar">ADICIONAR AO PEDIDO</button>
+            </div>
+        </div>
+
+        <!-- PAINEL DO CARRINHO -->
+        <aside id="carrinho" class="carrinho">
+            <div class="carrinho-painel">
+                <div class="carrinho-cabecalho">
+                    <div>
+                        <h2>🛒 Seu pedido</h2>
+                        <span id="quantidade-carrinho">0 itens</span>
+                    </div>
+                </div>
+
+                <div id="itens-carrinho" class="itens-carrinho">
+                    <p class="carrinho-vazio">Seu carrinho está vazio.</p>
+                </div>
+
+                <div class="carrinho-total">
+                    <span>Total</span>
+                    <strong id="valor-total">R$ 0,00</strong>
+                </div>
+
+                <div class="carrinho-botoes">
+                    <button type="button" id="continuar-comprando" class="botao-continuar">CONTINUAR COMPRANDO</button>
+                    <button type="button" id="finalizar-pedido" class="botao-finalizar" disabled>FINALIZAR PEDIDO</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- BARRA FIXA DO CARRINHO -->
+        <div id="carrinho-flutuante" class="carrinho-flutuante">
+            <div>
+                <strong>🛒 Seu pedido</strong>
+                <span id="resumo-carrinho">0 itens • R$ 0,00</span>
+            </div>
+            <button type="button" id="abrir-carrinho">VER PEDIDO</button>
+        </div>
+
+        <!-- DADOS DO CLIENTE -->
+        <section id="dados-pedido" class="dados-pedido">
+            <div class="titulo-secao">
+                <h2>📋 Seus dados</h2>
+                <p>Informe os dados para identificarmos seu pedido.</p>
+            </div>
+
+            <form id="formulario-pedido">
+                <div class="campo">
+                    <label for="nome">Nome *</label>
+                    <input type="text" id="nome" name="nome" placeholder="Digite seu nome" required>
+                </div>
+
+                <div class="campo">
+                    <label for="torre">Torre *</label>
+                    <input type="text" id="torre" name="torre" placeholder="Ex.: B" required>
+                </div>
+
+                <div class="campo">
+                    <label for="apartamento">Apartamento *</label>
+                    <input type="text" id="apartamento" name="apartamento" placeholder="Ex.: 301" required>
+                </div>
+
+                <div class="campo">
+                    <label>Forma de pagamento *</label>
+                    <label class="opcao-pagamento">
+                        <input type="radio" name="pagamento" value="Pix" required> 📱 Pix
+                    </label>
+                    <label class="opcao-pagamento">
+                        <input type="radio" name="pagamento" value="Dinheiro"> 💵 Dinheiro
+                    </label>
+                    <label class="opcao-pagamento">
+                        <input type="radio" name="pagamento" value="Cartão"> 💳 Cartão
+                    </label>
+                </div>
+
+                <div class="campo" id="campo-troco" style="display: none;">
+                    <label for="troco">Precisa de troco para quanto?</label>
+                    <input type="text" id="troco" name="troco" placeholder="Ex.: R$ 50,00 ou Não preciso">
+                </div>
+
+                <div class="campo">
+                    <label for="observacao">Observação</label>
+                    <textarea id="observacao" name="observacao" rows="4" placeholder="Alguma observação geral sobre seu pedido?"></textarea>
+                </div>
+
+                <p class="informacao-entrega">
+                    📍 A entrega é realizada na entrada da torre do condomínio.
+                </p>
+
+                <!-- BOTÃO DE ENVIAR PELO WHATSAPP -->
+                <button type="submit" class="botao-enviar">ENVIAR PEDIDO PELO WHATSAPP</button>
+
+                <!-- BOTÃO DE VOLTAR AO CARDÁPIO / CONTINUAR COMPRANDO -->
+                <button type="button" id="voltar-cardapio-dados" class="botao-voltar-cadastro">CONTINUAR COMPRANDO</button>
+            </form>
+        </section>
+    </main>
+
+    <!-- RODAPÉ CENTRALIZADO E ORGANIZADO -->
+    <footer id="rodape-duvidas" class="rodape">
+        <div class="rodape-container">
+            <h2 class="rodape-logo">
+                <span class="texto-burger">BURGER</span> <span class="texto-301">301</span>
+            </h2>
+            <p class="slogan-rodape">"O sabor que inspira."</p>
+
+            <div class="rodape-info">
+                <p>📍 Atendimento exclusivo aos moradores do condomínio</p>
+                <p class="rodape-horario">🕒 Sexta e sábado • 19h30 às 22h</p>
+            </div>
+
+            <!-- BOTÕES DE ÍCONES OFICIAIS (WHATSAPP E INSTAGRAM SEM TEXTO) -->
+            <div class="rodape-redes">
+                <a href="https://wa.me/5551981061618?text=Olá!%20Tenho%20uma%20dúvida%20sobre%20o%20cardápio." target="_blank" rel="noopener noreferrer" class="botao-duvidas-whatsapp botao-social-icone botao-whatsapp-icone" aria-label="Dúvidas no WhatsApp" title="Fale conosco no WhatsApp">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564.289.13.332.202c.045.072.045.419-.1.824zm-3.423-14.416c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm.029 18.88c-1.161 0-2.305-.292-3.318-.844l-3.677.964.984-3.595c-.607-1.052-.927-2.246-.926-3.468.001-3.825 3.113-6.937 6.937-6.937 1.856.001 3.598.723 4.907 2.034 1.31 1.311 2.031 3.054 2.03 4.908-.001 3.825-3.113 6.938-6.937 6.938z"/>
+                    </svg>
+                </a>
+
+                <a href="https://www.instagram.com/burger_301_poema?dlrf=MXZuZXhxcnlrcDZuNw==" target="_blank" rel="noopener noreferrer" class="botao-social-icone botao-instagram-icone" aria-label="Instagram Burger 301" title="Siga no Instagram">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                    </svg>
+                </a>
+            </div>
+
+            <!-- ASSINATURA CS CODE SOLUTIONS -->
+            <p class="copyright">
+                &copy; 2026 | Powered by <a href="https://cs-code-solutions.github.io/CS-Code-Solutions/" target="_blank" rel="noopener noreferrer">CS Code Solutions</a>
             </p>
         </div>
-    </div>
+    </footer>
 
-    <!-- PAINEL DE CONTROLE -->
-    <div class="container" id="container-principal">
-        <!-- Botão Tema Claro / Escuro -->
-        <button id="btn-tema-admin" type="button" title="Alternar Tema Claro / Escuro">☀️</button>
-
-        <!-- Botão de instalação dentro do painel -->
-        <button id="btn-instalar" type="button" title="Instalar App Admin">📥</button>
-
-        <div id="painel-controle" class="painel-conteudo">
-            <h2 style="margin-top: 10px;">⚙️ Painel Burger 301</h2>
-            
-            <!-- CONFIGURAÇÕES GERAIS DA LOJA -->
-            <div class="secao-painel">
-                <h3>⚙️ Configurações da Loja</h3>
-                
-                <div class="status-box">
-                    <label style="margin-bottom: 6px;">Modo de Funcionamento:</label>
-                    <div class="botoes-modo-loja">
-                        <button type="button" id="btn-modo-auto" class="btn-modo">⏰ Automático</button>
-                        <button type="button" id="btn-modo-aberto" class="btn-modo">🟢 Forçar Aberto</button>
-                        <button type="button" id="btn-modo-fechado" class="btn-modo">🔴 Forçar Fechado</button>
-                    </div>
-                </div>
-
-                <!-- Estrutura de configuração da biometria no dispositivo -->
-                <div class="status-box" style="margin-bottom: 12px;">
-                    <label style="margin-bottom: 4px;">🔐 Biometria neste Aparelho (Digital / Face ID):</label>
-                    <p id="info-biometria-painel" style="font-size: 12px; color: #bbb; margin: 0 0 8px 0;">Verificando suporte do dispositivo...</p>
-                    <div class="biometria-acoes">
-                        <button type="button" id="btn-ativar-biometria" style="background-color: #22c55e;">Ativar Digital / Face ID</button>
-                        <button type="button" id="btn-remover-biometria" style="background-color: #4b5563; display: none;">Desativar</button>
-                    </div>
-                </div>
-
-                <!-- Botão para abrir o editor de WhatsApp -->
-                <button id="btn-toggle-whatsapp" type="button" style="background-color: #3b82f6; margin-bottom: 10px;">📞 Alterar Número do WhatsApp</button>
-
-                <!-- Bloco de edição do WhatsApp oculto por padrão -->
-                <div id="container-form-whatsapp" style="display: none; background: #222; padding: 15px; border-radius: 6px; border: 1px solid #333; margin-top: 10px; margin-bottom: 10px;">
-                    <div class="campo" style="margin-bottom: 5px;">
-                        <label>WhatsApp para Pedidos (com DDI e DDD):</label>
-                        <input type="text" id="input-whatsapp" placeholder="Ex: 5551999999999">
-                    </div>
-                    <p style="font-size: 13px; color: #aaa; margin-bottom: 10px;">Número atual cadastrado: <b id="display-whatsapp-atual" style="color: #4ade80;">Carregando...</b></p>
-                    <button id="btn-salvar-whatsapp" type="button">Salvar Número do WhatsApp</button>
-                </div>
-
-                <!-- Botão para abrir o Gerenciador de Banner Mobile -->
-                <button id="btn-toggle-banner-mobile" type="button" style="background-color: #8b5cf6; margin-bottom: 5px;">🖼️ Banner Mobile (Temas)</button>
-
-                <!-- Bloco de Temas do Banner Mobile oculto por padrão -->
-                <div id="container-banner-mobile" style="display: none; background: #222; padding: 15px; border-radius: 6px; border: 1px solid #333; margin-top: 10px;">
-                    <div class="campo">
-                        <label>Nome do Tema:</label>
-                        <input type="text" id="input-nome-tema-banner" placeholder="Ex: Especial Sexta, Halloween, Promo...">
-                    </div>
-                    <div class="campo" style="background: rgba(242,140,40,0.08); padding: 10px; border-radius: 6px; border: 1px dashed #f28c28;">
-                        <label style="color: #f28c28; font-size: 13px;">📤 Upload do Banner (Compactação Automática):</label>
-                        <input type="file" id="input-arquivo-banner" accept="image/*" style="font-size: 12px; padding: 4px; margin-bottom: 6px;">
-                        <p id="status-compactacao-banner" style="font-size: 11px; color: #aaa; margin: 0;">Selecione uma imagem vertical para celular.</p>
-                        <img id="preview-novo-banner" alt="Prévia do banner" style="display: none; width: 100%; max-height: 160px; object-fit: cover; border-radius: 6px; margin-top: 8px; border: 1px solid #444;">
-                    </div>
-                    <button id="btn-salvar-tema-banner" type="button" style="background-color: #22c55e;">Salvar Tema de Banner</button>
-
-                    <div style="margin-top: 16px; border-top: 1px solid #333; padding-top: 12px;">
-                        <label style="margin-bottom: 4px;">Toque no tema para aplicar no site:</label>
-                        <div id="lista-banners-mobile" class="grid-banners-mobile"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- GERENCIADOR DE PROMOÇÕES MÚLTIPLAS COM BOTÃO DE OCULTAR -->
-            <div class="secao-painel">
-                <h3>🔥 Gerenciar Promoções Ativas</h3>
-                
-                <button id="btn-toggle-form-promo" type="button" style="background-color: #3b82f6; margin-bottom: 15px;">➕ Adicionar Nova Promoção</button>
-
-                <div id="container-form-promo" style="display: none; background: #222; padding: 15px; border-radius: 6px; border: 1px solid #333; margin-bottom: 15px;">
-                    <div class="campo">
-                        <label>Selecionar Produto:</label>
-                        <select id="select-promo-produto">
-                            <option value="">A carregar produtos...</option>
-                        </select>
-                    </div>
-                    <div class="campo">
-                        <label>Preço Promocional (R$):</label>
-                        <input type="text" id="input-promo-preco" placeholder="Ex: 25.00">
-                    </div>
-                    <div class="campo">
-                        <label>Texto em Destaque (Opcional):</label>
-                        <input type="text" id="input-promo-texto" placeholder="Ex: Só hoje com batata extra!">
-                    </div>
-                    <button id="btn-adicionar-promocao" type="button" style="background-color: #22c55e;">Salvar e Adicionar Promoção</button>
-                </div>
-
-                <div>
-                    <label style="margin-bottom: 8px;">Promoções Ativas na Loja:</label>
-                    <div id="lista-admin-promocoes" style="max-height: 220px; overflow-y: auto; background: #2a2a2a; padding: 10px; border-radius: 6px;">
-                        <p style="font-size: 13px; color: #777;">Nenhuma promoção adicionada.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ABAS DE NAVEGAÇÃO -->
-            <div class="abas-admin">
-                <button class="btn-aba ativa" id="tab-produtos">🍔 Produtos</button>
-                <button class="btn-aba" id="tab-adicionais">➕ Adicionais</button>
-            </div>
-
-            <!-- SEÇÃO DE PRODUTOS -->
-            <div id="conteudo-produtos">
-                <div class="secao-painel">
-                    <h3>📦 Gerenciar Produtos</h3>
-                    
-                    <!-- Botão para alternar a exibição do formulário de produto -->
-                    <button id="btn-toggle-form-produto" type="button" style="background-color: #3b82f6; margin-bottom: 15px;">➕ Adicionar Novo Produto</button>
-
-                    <!-- Formulário de produto oculto por padrão -->
-                    <div id="container-form-produto" style="display: none; background: #222; padding: 15px; border-radius: 6px; border: 1px solid #333; margin-bottom: 15px;">
-                        <h3 id="titulo-form-produto" style="margin-top: 0; color: #f28c28; border-bottom: 1px solid #333; padding-bottom: 8px; font-size: 16px;">➕ Adicionar Novo Produto</h3>
-                        <input type="hidden" id="edit-id" value="">
-                        <div class="campo">
-                            <label>Nome do Produto:</label>
-                            <input type="text" id="novo-nome" placeholder="Ex: Burger Especial">
-                        </div>
-                        <div class="campo">
-                            <label>Categoria:</label>
-                            <select id="novo-categoria">
-                                <option value="hamburgueres">Hambúrgueres</option>
-                                <option value="porcoes">Porções</option>
-                            </select>
-                        </div>
-                        <div class="campo">
-                            <label>Preço (R$):</label>
-                            <input type="text" id="novo-preco" placeholder="Ex: 35.00">
-                        </div>
-                        <div class="campo">
-                            <label>Descrição:</label>
-                            <textarea id="novo-descricao" rows="2" placeholder="Ingredientes..."></textarea>
-                        </div>
-
-                        <!-- OTIMIZADOR AUTOMÁTICO DE IMAGENS -->
-                        <div class="campo" style="background: #1a1a1a; padding: 12px; border-radius: 6px; border: 1px dashed #f28c28; margin-bottom: 15px;">
-                            <label style="color: #f28c28; margin-bottom: 4px; font-size: 13px;">⚡ Otimizador Automático de Foto:</label>
-                            <input type="file" id="input-arquivo-foto" accept="image/*" style="margin-bottom: 8px; font-size: 12px; padding: 4px;">
-                            <p id="status-otimizacao" style="font-size: 11px; color: #aaa; margin: 0 0 6px 0;">Escolha uma foto do telemóvel para reduzir o tamanho e otimizar para o site.</p>
-                            <a id="link-download-otimizado" style="display:none; background:#22c55e; color:#fff; padding:6px 10px; border-radius:4px; text-decoration:none; font-size:12px; text-align:center; font-weight:bold;">📥 Baixar Imagem Otimizada</a>
-                        </div>
-
-                        <div class="campo">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                                <label style="margin-bottom: 0;">Imagem PNG/JPG (Caminho):</label>
-                                <button type="button" id="btn-ajuda-img" style="width: 24px; height: 24px; padding: 0; font-size: 12px; background: #3b82f6; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold;">?</button>
-                            </div>
-                            <input type="text" id="novo-imagem" placeholder="Ex: imagens/nome-foto.jpg" value="../imagens/">
-                        </div>
-                        <button id="btn-salvar-produto" type="button">Cadastrar Produto</button>
-                        <button id="btn-cancelar-edicao" type="button" style="background: #555; margin-top: 8px; display: none;">Cancelar Edição</button>
-                    </div>
-
-                    <div id="lista-gestao-produtos" class="lista-admin-produtos">
-                        <p style="font-size: 13px; color: #777;">A carregar produtos...</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SEÇÃO DE ADICIONAIS -->
-            <div id="conteudo-adicionais" style="display: none;">
-                <div class="secao-painel">
-                    <h3 id="titulo-form-adicional">➕ Adicionar Novo Adicional</h3>
-                    <input type="hidden" id="edit-id-adic" value="">
-                    <div class="campo">
-                        <label>Nome do Adicional:</label>
-                        <input type="text" id="adic-nome" placeholder="Ex: Bacon Extra">
-                    </div>
-                    <div class="campo">
-                        <label>Preço (R$):</label>
-                        <input type="text" id="adic-preco" placeholder="Ex: 5.00">
-                    </div>
-                    <button id="btn-salvar-adicional" type="button">Cadastrar Adicional</button>
-                    <button id="btn-cancelar-edicao-adic" type="button" style="background: #555; margin-top: 8px; display: none;">Cancelar Edição</button>
-                </div>
-
-                <div class="secao-painel">
-                    <h3>🧀 Gerenciar Adicionais</h3>
-                    <div id="lista-gestao-adicionais" class="lista-admin-produtos">
-                        <p style="font-size: 13px; color: #777;">A carregar adicionais...</p>
-                    </div>
-                </div>
-            </div>
-
-            <p id="msg-sucesso" class="msg"></p>
-            <button id="btn-sair" type="button" style="background-color: #444; margin-top: 10px;">Sair</button>
-
-            <!-- ASSINATURA CS CODE SOLUTIONS NO FINAL DO PAINEL -->
-            <p style="font-size: 0.78rem; color: #aaa; text-align: center; margin-top: 25px; margin-bottom: 5px; letter-spacing: 0.5px;">
-                Powered by <a href="https://www.instagram.com/cs_code_solutions?exln=Ym1mNDMzYTYxa3d6" target="_blank" style="color: #f28c28; text-decoration: none; font-weight: bold;">CS Code Solutions</a>
-            </p>
-        </div>
-    </div>
-
-    <!-- MODAL DE AJUDA DE IMAGEM -->
-    <div id="modal-ajuda-img">
-        <div class="modal-ajuda-conteudo">
-            <button type="button" id="fechar-ajuda-img" class="btn-fechar-ajuda">✕</button>
-            <h3 style="color: #f28c28; margin-top: 0;">💡 Como adicionar imagens?</h3>
-            <p style="font-size: 14px; line-height: 1.5; color: #ccc;">
-                Como o site está hospedado no GitHub/Vercel, os ficheiros de imagem devem ser colocados diretamente na pasta <b>imagens/</b> da raiz.
-            </p>
-            <p style="font-size: 14px; line-height: 1.5; color: #ccc;">
-                <b>Passo a passo:</b><br>
-1. Use o otimizador automático acima para reduzir a foto do telemóvel.<br>
-2. Faça o upload do ficheiro gerado para a pasta <code>imagens/</code> no repositório.<br>
-3. O caminho fica preenchido automaticamente como: <code>imagens/nome.jpg</code>
-            </p>
-        </div>
-    </div>
-
-    <!-- LÓGICA DE INSTALAÇÃO (PWA), TEMA CLARO/ESCURO E BANNER RESPONSIVO -->
+    <!-- SCRIPT PARA FORÇAR A PÁGINA A ABRIR SEMPRE NO TOPO -->
     <script>
-        // Tema Claro / Escuro do Admin
-        const btnTemaAdmin = document.getElementById('btn-tema-admin');
-        const CHAVE_TEMA_ADMIN = 'burger301_admin_tema';
-
-        function aplicarTemaAdmin(tema) {
-            if (tema === 'claro') {
-                document.body.classList.add('tema-claro');
-                if (btnTemaAdmin) btnTemaAdmin.textContent = '🌙';
-            } else {
-                document.body.classList.remove('tema-claro');
-                if (btnTemaAdmin) btnTemaAdmin.textContent = '☀️';
-            }
-        }
-
-        aplicarTemaAdmin(localStorage.getItem(CHAVE_TEMA_ADMIN) || 'escuro');
-
-        if (btnTemaAdmin) {
-            btnTemaAdmin.addEventListener('click', () => {
-                const ehClaro = document.body.classList.contains('tema-claro');
-                const novoTema = ehClaro ? 'escuro' : 'claro';
-                localStorage.setItem(CHAVE_TEMA_ADMIN, novoTema);
-                aplicarTemaAdmin(novoTema);
-            });
-        }
-
-        const bgImg = document.getElementById('bg-login-img');
-        function ajustarBannerLogin() {
-            if (bgImg) {
-                if (window.innerWidth <= 768) {
-                    bgImg.src = '../imagens/banner-mobile.jpg';
-                } else {
-                    bgImg.src = '../imagens/banner.jpg';
-                }
-            }
-        }
-        ajustarBannerLogin();
-        window.addEventListener('resize', ajustarBannerLogin);
-
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js', { scope: './' })
-                .then(reg => console.log('Service Worker Admin registado!', reg))
-                .catch(err => console.error('Erro no Service Worker Admin:', err));
-            });
-        }
-
-        let deferredPrompt;
-        const btnInstalar = document.getElementById('btn-instalar');
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.navigator.standalone;
-        const jaInstalado = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-
-        function atualizarBotaoInstalarPainel() {
-            if (!btnInstalar) return;
-            if (jaInstalado) {
-                btnInstalar.style.display = 'none';
-            } else {
-                btnInstalar.style.display = 'inline-flex';
-            }
-        }
-
-        atualizarBotaoInstalarPainel();
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            atualizarBotaoInstalarPainel();
-        });
-
-        if (btnInstalar) {
-            btnInstalar.addEventListener('click', async () => {
-                if (isIOS) {
-                    alert("📱 Como instalar o Admin no iPhone:\n\n1. Toque no botão de partilha ⎋ (na barra do Safari).\n2. Role para baixo e selecione 'Adicionar à Tela de Início'.");
-                    return;
-                }
-                if (deferredPrompt) {
-                    deferredPrompt.prompt();
-                    const { outcome } = await deferredPrompt.userChoice;
-                    deferredPrompt = null;
-                    if (outcome === 'accepted') {
-                        btnInstalar.style.display = 'none';
-                    }
-                } else {
-                    alert("Para instalar o App Admin, abra o menu do navegador (⋮) e toque em 'Instalar aplicativo' ou 'Adicionar à tela inicial'.");
-                }
-            });
-        }
-
-        window.addEventListener('appinstalled', () => {
-            deferredPrompt = null;
-            if (btnInstalar) btnInstalar.style.display = 'none';
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                window.scrollTo(0, 0);
+            }, 10);
         });
     </script>
 
-    <!-- SCRIPT DO PAINEL ADMIN -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-        import { getFirestore, doc, getDoc, updateDoc, collection, getDocs, addDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
-        import { getAuth, signOut, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyBJlQENhh8DbqYLyTl4zwvyqLGRAIMz87Y",
-            authDomain: "burger301-79148.firebaseapp.com",
-            projectId: "burger301-79148",
-            storageBucket: "burger301-79148.firebasestorage.app",
-            messagingSenderId: "681050351563",
-            appId: "1:681050351563:web:7712d7ef3911365a2f784e"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-
-        const CHAVE_BIOMETRIA = "burger301_passkey_admin_v1";
-        const CHAVE_SESSAO_DESBLOQUEADA = "burger301_sessao_desbloqueada";
-
-        const telaLogin = document.getElementById("tela-login");
-        const painelControle = document.getElementById("painel-controle");
-        const containerPrincipal = document.getElementById("container-principal");
-        const erroLogin = document.getElementById("erro-login");
-
-        // Elementos da Biometria (Digital / Face ID)
-        const btnLoginGoogle = document.getElementById("btn-login-google");
-        const btnLoginBiometria = document.getElementById("btn-login-biometria");
-        const btnTrocarConta = document.getElementById("btn-trocar-conta");
-        const statusBiometriaLogin = document.getElementById("status-biometria-login");
-        const infoBiometriaPainel = document.getElementById("info-biometria-painel");
-        const btnAtivarBiometria = document.getElementById("btn-ativar-biometria");
-        const btnRemoverBiometria = document.getElementById("btn-remover-biometria");
-        
-        // Botões do Modo da Loja
-        const btnModoAuto = document.getElementById("btn-modo-auto");
-        const btnModoAberto = document.getElementById("btn-modo-aberto");
-        const btnModoFechado = document.getElementById("btn-modo-fechado");
-
-        // Toggle do WhatsApp
-        const btnToggleWhatsapp = document.getElementById("btn-toggle-whatsapp");
-        const containerFormWhatsapp = document.getElementById("container-form-whatsapp");
-        const inputWhatsapp = document.getElementById("input-whatsapp");
-        const displayWhatsappAtual = document.getElementById("display-whatsapp-atual");
-        const btnSalvarWhatsapp = document.getElementById("btn-salvar-whatsapp");
-        
-        // Elementos de Promoção e Toggle do Formulário
-        const btnToggleFormPromo = document.getElementById("btn-toggle-form-promo");
-        const containerFormPromo = document.getElementById("container-form-promo");
-        const selectPromoProduto = document.getElementById("select-promo-produto");
-        const inputPromoPreco = document.getElementById("input-promo-preco");
-        const inputPromoTexto = document.getElementById("input-promo-texto");
-        const btnAdicionarPromocao = document.getElementById("btn-adicionar-promocao");
-        const listaAdminPromocoes = document.getElementById("lista-admin-promocoes");
-
-        // Toggle do Formulário de Produtos
-        const btnToggleFormProduto = document.getElementById("btn-toggle-form-produto");
-        const containerFormProduto = document.getElementById("container-form-produto");
-        const tituloFormProduto = document.getElementById("titulo-form-produto");
-        const btnCancelarEdicao = document.getElementById("btn-cancelar-edicao");
-
-        // Outros elementos
-        const msgSucesso = document.getElementById("msg-sucesso");
-        const btnSair = document.getElementById("btn-sair");
-
-        let usuarioAutorizadoAtual = null;
-
-        getRedirectResult(auth).catch((error) => {
-            if (error) {
-                console.error("Erro no redirect Google:", error);
-                erroLogin.textContent = "Erro ao concluir login Google: " + error.message;
-            }
-        });
-
-        // =========================================
-        // ESTRUTURA DE BIOMETRIA (WEBAUTHN / PASSKEY)
-        // =========================================
-        function biometriaSuportada() {
-            return Boolean(window.PublicKeyCredential && navigator.credentials && window.isSecureContext);
-        }
-
-        function obterRegistroBiometria() {
-            try {
-                const raw = localStorage.getItem(CHAVE_BIOMETRIA);
-                return raw ? JSON.parse(raw) : null;
-            } catch (e) {
-                return null;
-            }
-        }
-
-        function salvarRegistroBiometria(dados) {
-            localStorage.setItem(CHAVE_BIOMETRIA, JSON.stringify(dados));
-            atualizarEstadoBiometriaUI();
-        }
-
-        function limparRegistroBiometria() {
-            localStorage.removeItem(CHAVE_BIOMETRIA);
-            atualizarEstadoBiometriaUI();
-        }
-
-        function base64UrlParaBytes(base64url) {
-            const padding = "=".repeat((4 - (base64url.length % 4)) % 4);
-            const base64 = (base64url + padding).replace(/-/g, "+").replace(/_/g, "/");
-            const raw = atob(base64);
-            const bytes = new Uint8Array(raw.length);
-            for (let i = 0; i < raw.length; i++) {
-                bytes[i] = raw.charCodeAt(i);
-            }
-            return bytes;
-        }
-
-        function bytesParaBase64Url(buffer) {
-            const bytes = new Uint8Array(buffer);
-            let binario = "";
-            for (let i = 0; i < bytes.length; i++) {
-                binario += String.fromCharCode(bytes[i]);
-            }
-            return btoa(binario).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-        }
-
-        function atualizarEstadoBiometriaUI() {
-            const suportada = biometriaSuportada();
-            const registro = obterRegistroBiometria();
-
-            if (!suportada) {
-                if (btnLoginBiometria) btnLoginBiometria.style.display = "none";
-                if (btnLoginGoogle) btnLoginGoogle.style.display = "flex";
-                if (btnTrocarConta) btnTrocarConta.style.display = "none";
-                if (statusBiometriaLogin) statusBiometriaLogin.textContent = "Biometria disponível apenas em conexão segura (HTTPS) com suporte WebAuthn.";
-                if (infoBiometriaPainel) infoBiometriaPainel.textContent = "Este navegador ou conexão não suporta biometria WebAuthn.";
-                if (btnAtivarBiometria) btnAtivarBiometria.disabled = true;
-                if (btnRemoverBiometria) btnRemoverBiometria.style.display = "none";
-                return;
-            }
-
-            if (registro) {
-                if (btnLoginBiometria) btnLoginBiometria.style.display = "flex";
-                if (btnLoginGoogle) btnLoginGoogle.style.display = "none";
-                if (btnTrocarConta) btnTrocarConta.style.display = "inline-block";
-            } else {
-                if (btnLoginBiometria) btnLoginBiometria.style.display = "none";
-                if (btnLoginGoogle) btnLoginGoogle.style.display = "flex";
-                if (btnTrocarConta) btnTrocarConta.style.display = "none";
-            }
-
-            if (statusBiometriaLogin) {
-                statusBiometriaLogin.style.color = "#bbb";
-                statusBiometriaLogin.textContent = registro
-                    ? `Biometria vinculada neste aparelho (${registro.email}).`
-                    : "Entre com Google uma vez e ative a Digital / Face ID nas configurações do painel.";
-            }
-
-            if (infoBiometriaPainel) {
-                infoBiometriaPainel.textContent = registro
-                    ? `Ativa neste aparelho para: ${registro.email}`
-                    : "Nenhuma digital ou Face ID vinculada neste aparelho ainda.";
-            }
-
-            if (btnAtivarBiometria) {
-                btnAtivarBiometria.disabled = false;
-                btnAtivarBiometria.textContent = registro ? "Atualizar Digital / Face ID" : "Ativar Digital / Face ID";
-            }
-
-            if (btnRemoverBiometria) {
-                btnRemoverBiometria.style.display = registro ? "block" : "none";
-            }
-        }
-
-        async function cadastrarBiometriaNoAparelho() {
-            erroLogin.textContent = "";
-            if (!biometriaSuportada()) {
-                alert("Biometria não suportada neste dispositivo/navegador.");
-                return;
-            }
-            if (!usuarioAutorizadoAtual || !usuarioAutorizadoAtual.email) {
-                alert("Faça login com uma conta Google autorizada primeiro.");
-                return;
-            }
-
-            try {
-                const desafio = crypto.getRandomValues(new Uint8Array(32));
-                const userIdBytes = new TextEncoder().encode(usuarioAutorizadoAtual.email.toLowerCase());
-
-                const credencial = await navigator.credentials.create({
-                    publicKey: {
-                        challenge: desafio,
-                        rp: {
-                            name: "Burger 301 Admin",
-                            id: window.location.hostname
-                        },
-                        user: {
-                            id: userIdBytes,
-                            name: usuarioAutorizadoAtual.email.toLowerCase(),
-                            displayName: usuarioAutorizadoAtual.displayName || "Admin Burger 301"
-                        },
-                        pubKeyCredParams: [
-                            { type: "public-key", alg: -7 },
-                            { type: "public-key", alg: -257 }
-                        ],
-                        authenticatorSelection: {
-                            authenticatorAttachment: "platform",
-                            userVerification: "required"
-                        },
-                        timeout: 60000
-                    }
-                });
-
-                if (!credencial) return;
-
-                sessionStorage.setItem(CHAVE_SESSAO_DESBLOQUEADA, "true");
-                salvarRegistroBiometria({
-                    email: usuarioAutorizadoAtual.email.toLowerCase(),
-                    credentialId: bytesParaBase64Url(credencial.rawId),
-                    criadoEm: new Date().toISOString()
-                });
-
-                mostrarMensagem("Digital / Face ID ativada neste aparelho!");
-            } catch (err) {
-                console.error("Erro ao cadastrar biometria:", err);
-                alert("Não foi possível ativar a biometria: " + (err.message || err));
-            }
-        }
-
-        async function autenticarComBiometria() {
-            erroLogin.textContent = "";
-            const registro = obterRegistroBiometria();
-
-            if (!biometriaSuportada() || !registro || !registro.credentialId) {
-                erroLogin.textContent = "Nenhuma biometria cadastrada neste aparelho.";
-                return;
-            }
-
-            try {
-                const desafio = crypto.getRandomValues(new Uint8Array(32));
-                const assertion = await navigator.credentials.get({
-                    publicKey: {
-                        challenge: desafio,
-                        rpId: window.location.hostname,
-                        allowCredentials: [
-                            {
-                                type: "public-key",
-                                id: base64UrlParaBytes(registro.credentialId)
-                            }
-                        ],
-                        userVerification: "required",
-                        timeout: 60000
-                    }
-                });
-
-                if (!assertion) return;
-                sessionStorage.setItem(CHAVE_SESSAO_DESBLOQUEADA, "true");
-            } catch (err) {
-                console.error("Erro na verificação biométrica:", err);
-                sessionStorage.removeItem(CHAVE_SESSAO_DESBLOQUEADA);
-                erroLogin.textContent = "Biometria não confirmada ou cancelada.";
-                return;
-            }
-
-            try {
-                if (typeof auth.authStateReady === "function") {
-                    await auth.authStateReady();
-                }
-
-                if (auth.currentUser && auth.currentUser.email && auth.currentUser.email.toLowerCase() === registro.email) {
-                    await liberarPainelParaUsuario(auth.currentUser);
-                    return;
-                }
-
-                statusBiometriaLogin.style.color = "#4ade80";
-                statusBiometriaLogin.textContent = "Face ID confirmado! Entrando no painel...";
-                const provider = new GoogleAuthProvider();
-                provider.setCustomParameters({ login_hint: registro.email });
-                await signInWithRedirect(auth, provider);
-            } catch (err) {
-                console.error("Erro ao entrar após biometria:", err);
-                erroLogin.textContent = "Erro ao conectar conta Google: " + (err.message || err);
-            }
-        }
-
-        if (btnAtivarBiometria) {
-            btnAtivarBiometria.addEventListener("click", cadastrarBiometriaNoAparelho);
-        }
-
-        if (btnRemoverBiometria) {
-            btnRemoverBiometria.addEventListener("click", () => {
-                if (confirm("Remover o login biométrico deste aparelho?")) {
-                    limparRegistroBiometria();
-                    mostrarMensagem("Biometria removida deste aparelho.");
-                }
-            });
-        }
-
-        if (btnLoginBiometria) {
-            btnLoginBiometria.addEventListener("click", autenticarComBiometria);
-        }
-
-        if (btnTrocarConta) {
-            btnTrocarConta.addEventListener("click", async () => {
-                sessionStorage.removeItem(CHAVE_SESSAO_DESBLOQUEADA);
-                limparRegistroBiometria();
-                await signOut(auth);
-            });
-        }
-
-        atualizarEstadoBiometriaUI();
-
-        // =========================================
-        // AÇÕES DO PAINEL E AUTENTICAÇÃO FIREBASE
-        // =========================================
-        if (btnToggleWhatsapp && containerFormWhatsapp) {
-            btnToggleWhatsapp.addEventListener("click", () => {
-                const visivel = containerFormWhatsapp.style.display === "block";
-                containerFormWhatsapp.style.display = visivel ? "none" : "block";
-                btnToggleWhatsapp.textContent = visivel ? "📞 Alterar Número do WhatsApp" : "❌ Fechar Edição do WhatsApp";
-                
-                if (!visivel) {
-                    window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
-                }
-            });
-        }
-
-        if (btnToggleFormPromo && containerFormPromo) {
-            btnToggleFormPromo.addEventListener("click", () => {
-                const visivel = containerFormPromo.style.display === "block";
-                containerFormPromo.style.display = visivel ? "none" : "block";
-                btnToggleFormPromo.textContent = visivel ? "➕ Adicionar Nova Promoção" : "❌ Fechar Formulário";
-                
-                if (!visivel) {
-                    window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
-                }
-            });
-        }
-
-        if (btnToggleFormProduto && containerFormProduto) {
-            btnToggleFormProduto.addEventListener("click", () => {
-                const visivel = containerFormProduto.style.display === "block";
-                containerFormProduto.style.display = visivel ? "none" : "block";
-                btnToggleFormProduto.textContent = visivel ? "➕ Adicionar Novo Produto" : "❌ Fechar Formulário";
-                
-                if (!visivel) {
-                    window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
-                }
-            });
-        }
-
-        btnSair.addEventListener("click", async () => {
-            usuarioAutorizadoAtual = null;
-            sessionStorage.removeItem(CHAVE_SESSAO_DESBLOQUEADA);
-
-            if (obterRegistroBiometria()) {
-                telaLogin.style.display = "flex";
-                containerPrincipal.style.background = "transparent";
-                painelControle.style.display = "none";
-                atualizarEstadoBiometriaUI();
-            } else {
-                await signOut(auth);
-            }
-        });
-
-        async function liberarPainelParaUsuario(user) {
-            const emailUtilizador = user.email.toLowerCase();
-            const docRef = doc(db, "configuracoes", "loja");
-            const docSnap = await getDoc(docRef);
-
-            let emailsPermitidos = ["cristianst3@gmail.com"];
-            if (docSnap.exists() && docSnap.data().emailsPermitidos) {
-                emailsPermitidos = docSnap.data().emailsPermitidos.map(e => e.toLowerCase());
-            }
-
-            if (emailsPermitidos.includes(emailUtilizador)) {
-                usuarioAutorizadoAtual = user;
-                sessionStorage.setItem(CHAVE_SESSAO_DESBLOQUEADA, "true");
-                telaLogin.style.display = "none";
-                containerPrincipal.style.background = "#1e1e1e";
-                painelControle.style.display = "block";
-                atualizarBotaoInstalarPainel();
-                atualizarEstadoBiometriaUI();
-                carregarDadosLoja();
-                carregarProdutosAdmin();
-                carregarAdicionaisAdmin();
-                carregarBannersMobileAdmin();
-            } else {
-                usuarioAutorizadoAtual = null;
-                sessionStorage.removeItem(CHAVE_SESSAO_DESBLOQUEADA);
-                await signOut(auth);
-                telaLogin.style.display = "flex";
-                containerPrincipal.style.background = "transparent";
-                painelControle.style.display = "none";
-                erroLogin.textContent = "Acesso negado: Este e-mail não tem autorização para aceder ao painel.";
-            }
-        }
-
-        auth.onAuthStateChanged(async (user) => {
-            if (user && user.email) {
-                const registro = obterRegistroBiometria();
-                const sessaoDesbloqueada = sessionStorage.getItem(CHAVE_SESSAO_DESBLOQUEADA) === "true";
-
-                if (registro && registro.email === user.email.toLowerCase() && !sessaoDesbloqueada) {
-                    usuarioAutorizadoAtual = null;
-                    telaLogin.style.display = "flex";
-                    containerPrincipal.style.background = "transparent";
-                    painelControle.style.display = "none";
-                    atualizarEstadoBiometriaUI();
-                    return;
-                }
-
-                try {
-                    await liberarPainelParaUsuario(user);
-                } catch (e) {
-                    console.error("Erro ao validar whitelist:", e);
-                    usuarioAutorizadoAtual = null;
-                    await signOut(auth);
-                    telaLogin.style.display = "flex";
-                    containerPrincipal.style.background = "transparent";
-                    painelControle.style.display = "none";
-                }
-            } else {
-                usuarioAutorizadoAtual = null;
-                telaLogin.style.display = "flex";
-                containerPrincipal.style.background = "transparent";
-                painelControle.style.display = "none";
-                atualizarEstadoBiometriaUI();
-            }
-        });
-
-        // =========================================
-        // GERENCIADOR DE BANNER MOBILE (TEMAS)
-        // =========================================
-        const btnToggleBannerMobile = document.getElementById("btn-toggle-banner-mobile");
-        const containerBannerMobile = document.getElementById("container-banner-mobile");
-        const inputNomeTemaBanner = document.getElementById("input-nome-tema-banner");
-        const inputArquivoBanner = document.getElementById("input-arquivo-banner");
-        const statusCompactacaoBanner = document.getElementById("status-compactacao-banner");
-        const previewNovoBanner = document.getElementById("preview-novo-banner");
-        const btnSalvarTemaBanner = document.getElementById("btn-salvar-tema-banner");
-        const listaBannersMobile = document.getElementById("lista-banners-mobile");
-
-        let bannerCompactadoDataUrl = "";
-        let bannerMobileAtivoAtual = "";
-        let bannerMobilePadraoNomeAtual = "Padrão (Original)";
-        let bannerMobilePadraoOcultoAtual = false;
-        let bannersMobileSalvosCache = [];
-
-        if (btnToggleBannerMobile && containerBannerMobile) {
-            btnToggleBannerMobile.addEventListener("click", () => {
-                const visivel = containerBannerMobile.style.display === "block";
-                containerBannerMobile.style.display = visivel ? "none" : "block";
-                btnToggleBannerMobile.textContent = visivel ? "🖼️ Banner Mobile (Temas)" : "❌ Fechar Temas de Banner";
-            });
-        }
-
-        if (inputArquivoBanner) {
-            inputArquivoBanner.addEventListener("change", (e) => {
-                const ficheiro = e.target.files[0];
-                if (!ficheiro) return;
-
-                statusCompactacaoBanner.textContent = "Compactando banner...";
-                statusCompactacaoBanner.style.color = "#f28c28";
-
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        const canvas = document.createElement("canvas");
-                        let largura = img.width;
-                        let altura = img.height;
-
-                        const larguraMaxima = 750;
-                        if (largura > larguraMaxima) {
-                            altura = Math.round((altura * larguraMaxima) / largura);
-                            largura = larguraMaxima;
-                        }
-
-                        canvas.width = largura;
-                        canvas.height = altura;
-
-                        const ctx = canvas.getContext("2d");
-                        ctx.drawImage(img, 0, 0, largura, altura);
-
-                        let dataUrl = canvas.toDataURL("image/jpeg", 0.75);
-                        if (dataUrl.length > 750000) {
-                            dataUrl = canvas.toDataURL("image/jpeg", 0.55);
-                        }
-
-                        bannerCompactadoDataUrl = dataUrl;
-                        const tamanhoKB = Math.round((dataUrl.length * 3) / 4 / 1024);
-
-                        previewNovoBanner.src = dataUrl;
-                        previewNovoBanner.style.display = "block";
-                        statusCompactacaoBanner.textContent = `✅ Banner compactado (${tamanhoKB} KB). Digite o nome e clique em Salvar.`;
-                        statusCompactacaoBanner.style.color = "#4ade80";
-                    };
-                    img.src = event.target.result;
-                };
-                reader.readAsDataURL(ficheiro);
-            });
-        }
-
-        if (btnSalvarTemaBanner) {
-            btnSalvarTemaBanner.addEventListener("click", async () => {
-                const nomeTema = inputNomeTemaBanner.value.trim();
-                if (!nomeTema) {
-                    alert("Digite o nome do tema (Ex: Especial Sexta).");
-                    return;
-                }
-                if (!bannerCompactadoDataUrl) {
-                    alert("Selecione uma imagem para o banner.");
-                    return;
-                }
-
-                btnSalvarTemaBanner.disabled = true;
-                btnSalvarTemaBanner.textContent = "Salvando...";
-
-                try {
-                    await addDoc(collection(db, "banners_mobile"), {
-                        nome: nomeTema,
-                        imagem: bannerCompactadoDataUrl,
-                        criadoEm: Date.now()
-                    });
-
-                    await updateDoc(doc(db, "configuracoes", "loja"), {
-                        bannerMobileAtivo: bannerCompactadoDataUrl,
-                        bannerMobileNome: nomeTema
-                    });
-
-                    inputNomeTemaBanner.value = "";
-                    inputArquivoBanner.value = "";
-                    bannerCompactadoDataUrl = "";
-                    previewNovoBanner.style.display = "none";
-                    statusCompactacaoBanner.textContent = "Selecione uma imagem vertical para celular.";
-                    statusCompactacaoBanner.style.color = "#aaa";
-                    mostrarMensagem(`Tema "${nomeTema}" salvo e aplicado no site!`);
-                } catch (err) {
-                    console.error("Erro ao salvar tema de banner:", err);
-                    alert("Erro ao salvar banner: " + (err.message || err));
-                } finally {
-                    btnSalvarTemaBanner.disabled = false;
-                    btnSalvarTemaBanner.textContent = "Salvar Tema de Banner";
-                }
-            });
-        }
-
-        function renderizarCardsBannersMobile() {
-            if (!listaBannersMobile) return;
-            listaBannersMobile.innerHTML = "";
-
-            const todosBanners = [
-                ...(!bannerMobilePadraoOcultoAtual ? [{
-                    id: "padrao",
-                    nome: bannerMobilePadraoNomeAtual,
-                    imagemSite: "",
-                    imagemThumb: "../imagens/gta.png",
-                    padrao: true
-                }] : []),
-                ...bannersMobileSalvosCache.map(b => ({
-                    id: b.id,
-                    nome: b.nome,
-                    imagemSite: b.imagem,
-                    imagemThumb: b.imagem,
-                    padrao: false
-                }))
-            ];
-
-            todosBanners.forEach(item => {
-                const estaAtivo = item.padrao
-                    ? !bannerMobileAtivoAtual
-                    : bannerMobileAtivoAtual === item.imagemSite;
-
-                const card = document.createElement("div");
-                card.className = "card-banner-tema" + (estaAtivo ? " ativo" : "");
-                card.innerHTML = `
-                    <div class="card-banner-acoes">
-                        <button type="button" class="btn-editar-banner" title="Renomear tema">✏️</button>
-                        <button type="button" class="btn-excluir-banner" title="Excluir tema">🗑️</button>
-                    </div>
-                    <img src="${item.imagemThumb}" alt="${item.nome}">
-                    <div class="card-banner-info">
-                        <span class="card-banner-nome">${item.nome}</span>
-                        <span class="badge-banner-status">${estaAtivo ? "✅ Ativo no Site" : "Selecionar"}</span>
-                    </div>
-                `;
-
-                card.addEventListener("click", async (e) => {
-                    if (e.target.closest(".card-banner-acoes")) return;
-                    try {
-                        await updateDoc(doc(db, "configuracoes", "loja"), {
-                            bannerMobileAtivo: item.imagemSite,
-                            bannerMobileNome: item.nome
-                        });
-                        mostrarMensagem(`Banner "${item.nome}" ativado no site!`);
-                    } catch (err) {
-                        console.error("Erro ao selecionar banner:", err);
-                    }
-                });
-
-                const btnEdit = card.querySelector(".btn-editar-banner");
-                if (btnEdit) {
-                    btnEdit.addEventListener("click", async (e) => {
-                        e.stopPropagation();
-                        const novoNome = prompt("Digite o novo nome para este tema:", item.nome);
-                        if (novoNome === null) return;
-                        const nomeLimpo = novoNome.trim();
-                        if (!nomeLimpo) {
-                            alert("O nome do tema não pode ficar vazio.");
-                            return;
-                        }
-                        if (nomeLimpo === item.nome) return;
-
-                        try {
-                            if (item.padrao) {
-                                const atualizacao = {
-                                    bannerMobilePadraoNome: nomeLimpo
-                                };
-                                if (estaAtivo) {
-                                    atualizacao.bannerMobileNome = nomeLimpo;
-                                }
-                                await updateDoc(doc(db, "configuracoes", "loja"), atualizacao);
-                            } else {
-                                await updateDoc(doc(db, "banners_mobile", item.id), {
-                                    nome: nomeLimpo
-                                });
-                                if (estaAtivo) {
-                                    await updateDoc(doc(db, "configuracoes", "loja"), {
-                                        bannerMobileNome: nomeLimpo
-                                    });
-                                }
-                            }
-                            mostrarMensagem(`Tema renomeado para "${nomeLimpo}"!`);
-                        } catch (err) {
-                            console.error("Erro ao renomear tema de banner:", err);
-                            alert("Erro ao renomear tema: " + (err.message || err));
-                        }
-                    });
-                }
-
-                const btnDel = card.querySelector(".btn-excluir-banner");
-                if (btnDel) {
-                    btnDel.addEventListener("click", async (e) => {
-                        e.stopPropagation();
-                        if (!confirm(`Excluir o tema "${item.nome}"?`)) return;
-                        try {
-                            if (item.padrao) {
-                                const atualizacao = {
-                                    bannerMobilePadraoOculto: true
-                                };
-                                if (estaAtivo && bannersMobileSalvosCache.length > 0) {
-                                    atualizacao.bannerMobileAtivo = bannersMobileSalvosCache[0].imagem;
-                                    atualizacao.bannerMobileNome = bannersMobileSalvosCache[0].nome;
-                                }
-                                await updateDoc(doc(db, "configuracoes", "loja"), atualizacao);
-                            } else {
-                                await deleteDoc(doc(db, "banners_mobile", item.id));
-                                if (estaAtivo) {
-                                    const restantes = bannersMobileSalvosCache.filter(b => b.id !== item.id);
-                                    if (!bannerMobilePadraoOcultoAtual) {
-                                        await updateDoc(doc(db, "configuracoes", "loja"), {
-                                            bannerMobileAtivo: "",
-                                            bannerMobileNome: bannerMobilePadraoNomeAtual
-                                        });
-                                    } else if (restantes.length > 0) {
-                                        await updateDoc(doc(db, "configuracoes", "loja"), {
-                                            bannerMobileAtivo: restantes[0].imagem,
-                                            bannerMobileNome: restantes[0].nome
-                                        });
-                                    } else {
-                                        await updateDoc(doc(db, "configuracoes", "loja"), {
-                                            bannerMobileAtivo: "",
-                                            bannerMobileNome: ""
-                                        });
-                                    }
-                                }
-                            }
-                            mostrarMensagem("Tema de banner removido!");
-                        } catch (err) {
-                            console.error("Erro ao excluir tema de banner:", err);
-                        }
-                    });
-                }
-
-                listaBannersMobile.appendChild(card);
-            });
-        }
-
-        function carregarBannersMobileAdmin() {
-            onSnapshot(collection(db, "banners_mobile"), (snapshot) => {
-                const lista = [];
-                snapshot.forEach(docSnap => {
-                    lista.push({ id: docSnap.id, ...docSnap.data() });
-                });
-                lista.sort((a, b) => (b.criadoEm || 0) - (a.criadoEm || 0));
-                bannersMobileSalvosCache = lista;
-                renderizarCardsBannersMobile();
-            });
-        }
-
-        // OTIMIZADOR AUTOMÁTICO DE IMAGENS VIA CANVAS
-        const inputArquivoFoto = document.getElementById("input-arquivo-foto");
-        const statusOtimizacao = document.getElementById("status-otimizacao");
-        const linkDownloadOtimizado = document.getElementById("link-download-otimizado");
-        const novoImagem = document.getElementById("novo-imagem");
-
-        if (inputArquivoFoto) {
-            inputArquivoFoto.addEventListener("change", function(e) {
-                const ficheiro = e.target.files[0];
-                if (!ficheiro) return;
-
-                statusOtimizacao.textContent = "A otimizar imagem...";
-                statusOtimizacao.style.color = "#f28c28";
-
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const img = new Image();
-                    img.onload = function() {
-                        const canvas = document.createElement("canvas");
-                        let largura = img.width;
-                        let altura = img.height;
-
-                        const larguraMaxima = 800;
-                        if (largura > larguraMaxima) {
-                            altura = Math.round((altura * larguraMaxima) / largura);
-                            largura = larguraMaxima;
-                        }
-
-                        canvas.width = largura;
-                        canvas.height = altura;
-
-                        const ctx = canvas.getContext("2d");
-                        ctx.drawImage(img, 0, 0, largura, altura);
-
-                        canvas.toBlob(function(blob) {
-                            const nomeOriginal = ficheiro.name.replace(/\.[^/.]+$/, "").toLowerCase().replace(/[^a-z0-9]/g, "-");
-                            const nomeFicheiroOtimizado = `${nomeOriginal}.jpg`;
-
-                            const urlBlob = URL.createObjectURL(blob);
-                            linkDownloadOtimizado.href = urlBlob;
-                            linkDownloadOtimizado.download = nomeFicheiroOtimizado;
-                            linkDownloadOtimizado.style.display = "block";
-
-                            novoImagem.value = `imagens/${nomeFicheiroOtimizado}`;
-
-                            statusOtimizacao.textContent = `✅ Imagem pronta! Baixe o ficheiro abaixo e coloque-o na pasta imagens/.`;
-                            statusOtimizacao.style.color = "#4ade80";
-                        }, "image/jpeg", 0.8);
-                    };
-                    img.src = event.target.result;
-                };
-                reader.readAsDataURL(ficheiro);
-            });
-        }
-
-        function carregarDadosLoja() {
-            onSnapshot(doc(db, "configuracoes", "loja"), (docSnap) => {
-                if (docSnap.exists()) {
-                    const dados = docSnap.data();
-                    const modo = dados.modoLoja || (dados.aberto ? "aberto" : "fechado");
-                    atualizarBotoesModoLojaUI(modo);
-                    
-                    if (dados.whatsapp) {
-                        displayWhatsappAtual.textContent = dados.whatsapp;
-                        inputWhatsapp.value = dados.whatsapp;
-                    }
-
-                    bannerMobileAtivoAtual = dados.bannerMobileAtivo || "";
-                    bannerMobilePadraoNomeAtual = dados.bannerMobilePadraoNome || "Padrão (Original)";
-                    bannerMobilePadraoOcultoAtual = Boolean(dados.bannerMobilePadraoOculto);
-                    renderizarCardsBannersMobile();
-                }
-            });
-        }
-
-        function atualizarBotoesModoLojaUI(modo) {
-            btnModoAuto.classList.remove("ativo");
-            btnModoAberto.classList.remove("ativo");
-            btnModoFechado.classList.remove("ativo");
-
-            if (modo === "aberto") btnModoAberto.classList.add("ativo");
-            else if (modo === "fechado") btnModoFechado.classList.add("ativo");
-            else btnModoAuto.classList.add("ativo");
-        }
-
-        async function alterarModoLoja(novoModo) {
-            try {
-                await updateDoc(doc(db, "configuracoes", "loja"), {
-                    modoLoja: novoModo,
-                    aberto: novoModo === "aberto"
-                });
-                mostrarMensagem("Modo da loja atualizado com sucesso!");
-            } catch (e) {
-                console.error("Erro ao alterar modo:", e);
-            }
-        }
-
-        btnModoAuto.onclick = () => alterarModoLoja("automatico");
-        btnModoAberto.onclick = () => alterarModoLoja("aberto");
-        btnModoFechado.onclick = () => alterarModoLoja("fechado");
-
-        btnSalvarWhatsapp.addEventListener("click", async () => {
-            const novoWhats = inputWhatsapp.value.trim();
-            if (!novoWhats) {
-                alert("Digite um número de WhatsApp válido.");
-                return;
-            }
-            try {
-                await updateDoc(doc(db, "configuracoes", "loja"), { whatsapp: novoWhats });
-                mostrarMensagem("Número do WhatsApp atualizado!");
-                containerFormWhatsapp.style.display = "none";
-                btnToggleWhatsapp.textContent = "📞 Alterar Número do WhatsApp";
-            } catch (e) {
-                console.error("Erro ao salvar WhatsApp:", e);
-            }
-        });
-
-        const listaGestaoProdutos = document.getElementById("lista-gestao-produtos");
-        const novoNome = document.getElementById("novo-nome");
-        const novoCategoria = document.getElementById("novo-categoria");
-        const novoPreco = document.getElementById("novo-preco");
-        const novoDescricao = document.getElementById("novo-descricao");
-        const btnSalvarProduto = document.getElementById("btn-salvar-produto");
-        const editId = document.getElementById("edit-id");
-
-        function carregarProdutosAdmin() {
-            onSnapshot(collection(db, "produtos"), (snapshot) => {
-                listaGestaoProdutos.innerHTML = "";
-                selectPromoProduto.innerHTML = '<option value="">Selecione um produto</option>';
-                
-                const produtos = [];
-                snapshot.forEach(docSnap => {
-                    produtos.push({ id: docSnap.id, ...docSnap.data() });
-                });
-                produtos.sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
-
-                if (produtos.length === 0) {
-                    listaGestaoProdutos.innerHTML = `<p style="font-size: 13px; color: #777;">Nenhum produto cadastrado.</p>`;
-                    return;
-                }
-
-                produtos.forEach(p => {
-                    const opt = document.createElement("option");
-                    opt.value = p.id;
-                    opt.textContent = `${p.nome} (R$ ${Number(p.preco).toFixed(2)})`;
-                    selectPromoProduto.appendChild(opt);
-
-                    const div = document.createElement("div");
-                    div.className = "item-admin-produto";
-                    div.innerHTML = `
-                        <div class="item-topo">
-                            <span><b>${p.nome}</b> (${p.categoria}) - R$ ${Number(p.preco).toFixed(2)}</span>
-                            <div class="item-botoes">
-                                <button type="button" class="btn-subir" data-id="${p.id}" style="padding: 4px 8px; font-size: 12px; background: #444;">⬆️</button>
-                                <button type="button" class="btn-descer" data-id="${p.id}" style="padding: 4px 8px; font-size: 12px; background: #444;">⬇️</button>
-                                <button type="button" class="btn-esgotar" data-id="${p.id}" data-esgotado="${p.esgotado}" style="padding: 4px 8px; font-size: 12px; background: ${p.esgotado ? '#ef4444' : '#22c55e'};">${p.esgotado ? 'Esgotado' : 'Disponível'}</button>
-                                <button type="button" class="btn-editar" data-id="${p.id}" style="padding: 4px 8px; font-size: 12px; background: #3b82f6;">✏️</button>
-                                <button type="button" class="btn-excluir" data-id="${p.id}" style="padding: 4px 8px; font-size: 12px; background: #ef4444;">🗑️</button>
-                            </div>
-                        </div>
-                    `;
-                    listaGestaoProdutos.appendChild(div);
-                });
-
-                configurarAcoesProdutos(produtos);
-            });
-        }
-
-        btnSalvarProduto.addEventListener("click", async () => {
-            const nome = novoNome.value.trim();
-            const categoria = novoCategoria.value;
-            const preco = parseFloat(novoPreco.value.replace(",", "."));
-            const descricao = novoDescricao.value.trim();
-            const imagem = novoImagem.value.trim();
-
-            if (!nome || isNaN(preco)) {
-                alert("Preencha o nome e um preço válido.");
-                return;
-            }
-
-            try {
-                if (editId.value) {
-                    await updateDoc(doc(db, "produtos", editId.value), { nome, categoria, preco, descricao, imagem });
-                    mostrarMensagem("Produto atualizado com sucesso!");
-                } else {
-                    const snapshot = await getDocs(collection(db, "produtos"));
-                    const novaOrdem = snapshot.size;
-                    await addDoc(collection(db, "produtos"), { nome, categoria, preco, descricao, imagem, esgotado: false, ordem: novaOrdem });
-                    mostrarMensagem("Produto cadastrado com sucesso!");
-                }
-                limparFormularioProduto();
-                containerFormProduto.style.display = "none";
-                btnToggleFormProduto.textContent = "➕ Adicionar Novo Produto";
-            } catch (e) {
-                console.error("Erro ao salvar produto:", e);
-            }
-        });
-
-        function limparFormularioProduto() {
-            editId.value = "";
-            novoNome.value = "";
-            novoPreco.value = "";
-            novoDescricao.value = "";
-            novoImagem.value = "../imagens/";
-            if(inputArquivoFoto) inputArquivoFoto.value = "";
-            if(linkDownloadOtimizado) linkDownloadOtimizado.style.display = "none";
-            if(statusOtimizacao) statusOtimizacao.textContent = "Escolha uma foto do telemóvel para reduzir o tamanho e otimizar para o site.";
-            btnSalvarProduto.textContent = "Cadastrar Produto";
-            btnCancelarEdicao.style.display = "none";
-            tituloFormProduto.textContent = "➕ Adicionar Novo Produto";
-        }
-
-        btnCancelarEdicao.addEventListener("click", () => {
-            limparFormularioProduto();
-            containerFormProduto.style.display = "none";
-            btnToggleFormProduto.textContent = "➕ Adicionar Novo Produto";
-        });
-
-        function configurarAcoesProdutos(produtos) {
-            document.querySelectorAll(".btn-esgotar").forEach(b => {
-                b.onclick = async () => {
-                    const id = b.dataset.id;
-                    const esgotadoAtual = b.dataset.esgotado === "true";
-                    await updateDoc(doc(db, "produtos", id), { esgotado: !esgotadoAtual });
-                };
-            });
-
-            document.querySelectorAll(".btn-excluir").forEach(b => {
-                b.onclick = async () => {
-                    if (confirm("Tem certeza que deseja excluir este produto?")) {
-                        await deleteDoc(doc(db, "produtos", b.dataset.id));
-                        mostrarMensagem("Produto excluído!");
-                    }
-                };
-            });
-
-            document.querySelectorAll(".btn-editar").forEach(b => {
-                b.onclick = () => {
-                    const p = produtos.find(item => item.id === b.dataset.id);
-                    if (!p) return;
-                    editId.value = p.id;
-                    novoNome.value = p.nome;
-                    novoCategoria.value = p.categoria;
-                    novoPreco.value = p.preco;
-                    novoDescricao.value = p.descricao || "";
-                    novoImagem.value = p.imagem || "../imagens/";
-                    btnSalvarProduto.textContent = "Salvar Alterações";
-                    btnCancelarEdicao.style.display = "block";
-                    tituloFormProduto.textContent = "✏️ Editar Produto";
-                    containerFormProduto.style.display = "block";
-                    btnToggleFormProduto.textContent = "❌ Fechar Formulário";
-                    containerFormProduto.scrollIntoView({ behavior: "smooth" });
-                };
-            });
-
-            document.querySelectorAll(".btn-subir").forEach(b => {
-                b.onclick = async () => {
-                    const id = b.dataset.id;
-                    const index = produtos.findIndex(item => item.id === id);
-                    if (index > 0) {
-                        const atual = produtos[index];
-                        const acima = produtos[index - 1];
-                        await updateDoc(doc(db, "produtos", atual.id), { ordem: acima.ordem ?? (index - 1) });
-                        await updateDoc(doc(db, "produtos", acima.id), { ordem: atual.ordem ?? index });
-                    }
-                };
-            });
-
-            document.querySelectorAll(".btn-descer").forEach(b => {
-                b.onclick = async () => {
-                    const id = b.dataset.id;
-                    const index = produtos.findIndex(item => item.id === id);
-                    if (index < produtos.length - 1) {
-                        const atual = produtos[index];
-                        const abaixo = produtos[index + 1];
-                        await updateDoc(doc(db, "produtos", atual.id), { ordem: abaixo.ordem ?? (index + 1) });
-                        await updateDoc(doc(db, "produtos", abaixo.id), { ordem: atual.ordem ?? index });
-                    }
-                };
-            });
-        }
-
-        btnAdicionarPromocao.addEventListener("click", async () => {
-            const produtoId = selectPromoProduto.value;
-            const preco = parseFloat(inputPromoPreco.value.replace(",", "."));
-            const descricao = inputPromoTexto.value.trim();
-
-            if (!produtoId || isNaN(preco)) {
-                alert("Selecione um produto e informe um preço promocional válido.");
-                return;
-            }
-
-            try {
-                const docRef = doc(db, "configuracoes", "loja");
-                const docSnap = await getDoc(docRef);
-                let promocoes = [];
-                if (docSnap.exists() && docSnap.data().promocoes) {
-                    promocoes = docSnap.data().promocoes;
-                }
-
-                promocoes.push({ produtoId, preco, descricao });
-                await updateDoc(docRef, { promocoes });
-
-                mostrarMensagem("Promoção adicionada com sucesso!");
-                inputPromoPreco.value = "";
-                inputPromoTexto.value = "";
-                selectPromoProduto.value = "";
-                containerFormPromo.style.display = "none";
-                btnToggleFormPromo.textContent = "➕ Adicionar Nova Promoção";
-            } catch (e) {
-                console.error("Erro ao adicionar promoção:", e);
-            }
-        });
-
-        onSnapshot(doc(db, "configuracoes", "loja"), (docSnap) => {
-            if (docSnap.exists()) {
-                const dados = docSnap.data();
-                const promocoes = dados.promocoes || [];
-                
-                listaAdminPromocoes.innerHTML = "";
-                if (promocoes.length === 0) {
-                    listaAdminPromocoes.innerHTML = `<p style="font-size: 13px; color: #777;">Nenhuma promoção adicionada.</p>`;
-                    return;
-                }
-
-                promocoes.forEach((promo, index) => {
-                    const div = document.createElement("div");
-                    div.style.cssText = "display: flex; justify-content: space-between; align-items: center; background: #222; padding: 8px; border-radius: 4px; margin-bottom: 6px; font-size: 13px;";
-                    div.innerHTML = `
-                        <span>Promoção #${index + 1} (R$ ${Number(promo.preco).toFixed(2)})</span>
-                        <button type="button" class="btn-remover-promo" data-index="${index}" style="padding: 3px 8px; font-size: 11px; background: #ef4444; width: auto;">Remover</button>
-                    `;
-                    listaAdminPromocoes.appendChild(div);
-                });
-
-                document.querySelectorAll(".btn-remover-promo").forEach(b => {
-                    b.onclick = async () => {
-                        const idx = parseInt(b.dataset.index);
-                        promocoes.splice(idx, 1);
-                        await updateDoc(doc(db, "configuracoes", "loja"), { promocoes });
-                        mostrarMensagem("Promoção removida!");
-                    };
-                });
-            }
-        });
-
-        const listaGestaoAdicionais = document.getElementById("lista-gestao-adicionais");
-        const adicNome = document.getElementById("adic-nome");
-        const adicPreco = document.getElementById("adic-preco");
-        const btnSalvarAdicional = document.getElementById("btn-salvar-adicional");
-        const editIdAdic = document.getElementById("edit-id-adic");
-        const btnCancelarEdicaoAdic = document.getElementById("btn-cancelar-edicao-adic");
-        const tituloFormAdicional = document.getElementById("titulo-form-adicional");
-
-        function carregarAdicionaisAdmin() {
-            onSnapshot(collection(db, "adicionais"), (snapshot) => {
-                listaGestaoAdicionais.innerHTML = "";
-                const adicionais = [];
-                snapshot.forEach(docSnap => {
-                    adicionais.push({ id: docSnap.id, ...docSnap.data() });
-                });
-
-                if (adicionais.length === 0) {
-                    listaGestaoAdicionais.innerHTML = `<p style="font-size: 13px; color: #777;">Nenhum adicional cadastrado.</p>`;
-                    return;
-                }
-
-                adicionais.forEach(a => {
-                    const div = document.createElement("div");
-                    div.className = "item-admin-produto";
-                    div.innerHTML = `
-                        <div class="item-topo">
-                            <span><b>${a.nome}</b> - R$ ${Number(a.preco).toFixed(2)}</span>
-                            <div class="item-botoes">
-                                <button type="button" class="btn-esgotar-adic" data-id="${a.id}" data-esgotado="${a.esgotado}" style="padding: 4px 8px; font-size: 12px; background: ${a.esgotado ? '#ef4444' : '#22c55e'};">${a.esgotado ? 'Esgotado' : 'Disponível'}</button>
-                                <button type="button" class="btn-editar-adic" data-id="${a.id}" style="padding: 4px 8px; font-size: 12px; background: #3b82f6;">✏️</button>
-                                <button type="button" class="btn-excluir-adic" data-id="${a.id}" style="padding: 4px 8px; font-size: 12px; background: #ef4444;">🗑️</button>
-                            </div>
-                        </div>
-                    `;
-                    listaGestaoAdicionais.appendChild(div);
-                });
-
-                configurarAcoesAdicionais(adicionais);
-            });
-        }
-
-        btnSalvarAdicional.addEventListener("click", async () => {
-            const nome = adicNome.value.trim();
-            const preco = parseFloat(adicPreco.value.replace(",", "."));
-
-            if (!nome || isNaN(preco)) {
-                alert("Preencha o nome e um preço válido para o adicional.");
-                return;
-            }
-
-            try {
-                if (editIdAdic.value) {
-                    await updateDoc(doc(db, "adicionais", editIdAdic.value), { nome, preco });
-                    mostrarMensagem("Adicional atualizado com sucesso!");
-                } else {
-                    await addDoc(collection(db, "adicionais"), { nome, preco, esgotado: false });
-                    mostrarMensagem("Adicional cadastrado com sucesso!");
-                }
-                limparFormularioAdicional();
-            } catch (e) {
-                console.error("Erro ao salvar adicional:", e);
-            }
-        });
-
-        function limparFormularioAdicional() {
-            editIdAdic.value = "";
-            adicNome.value = "";
-            adicPreco.value = "";
-            btnSalvarAdicional.textContent = "Cadastrar Adicional";
-            btnCancelarEdicaoAdic.style.display = "none";
-            tituloFormAdicional.textContent = "➕ Adicionar Novo Adicional";
-        }
-
-        btnCancelarEdicaoAdic.addEventListener("click", limparFormularioAdicional);
-
-        function configurarAcoesAdicionais(adicionais) {
-            document.querySelectorAll(".btn-esgotar-adic").forEach(b => {
-                b.onclick = async () => {
-                    const id = b.dataset.id;
-                    const esgotadoAtual = b.dataset.esgotado === "true";
-                    await updateDoc(doc(db, "adicionais", id), { esgotado: !esgotadoAtual });
-                };
-            });
-
-            document.querySelectorAll(".btn-excluir-adic").forEach(b => {
-                b.onclick = async () => {
-                    if (confirm("Deseja excluir este adicional?")) {
-                        await deleteDoc(doc(db, "adicionais", b.dataset.id));
-                        mostrarMensagem("Adicional excluído!");
-                    }
-                };
-            });
-
-            document.querySelectorAll(".btn-editar-adic").forEach(b => {
-                b.onclick = () => {
-                    const a = adicionais.find(item => item.id === b.dataset.id);
-                    if (!a) return;
-                    editIdAdic.value = a.id;
-                    adicNome.value = a.nome;
-                    adicPreco.value = a.preco;
-                    btnSalvarAdicional.textContent = "Salvar Alterações";
-                    btnCancelarEdicaoAdic.style.display = "block";
-                    tituloFormAdicional.textContent = "✏️ Editar Adicional";
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                };
-            });
-        }
-
-        const tabProdutos = document.getElementById("tab-produtos");
-        const tabAdicionais = document.getElementById("tab-adicionais");
-        const conteudoProdutos = document.getElementById("conteudo-produtos");
-        const conteudoAdicionais = document.getElementById("conteudo-adicionais");
-
-        tabProdutos.addEventListener("click", () => {
-            tabProdutos.classList.add("ativa");
-            tabAdicionais.classList.remove("ativa");
-            conteudoProdutos.style.display = "block";
-            conteudoAdicionais.style.display = "none";
-        });
-
-        tabAdicionais.addEventListener("click", () => {
-            tabAdicionais.classList.add("ativa");
-            tabProdutos.classList.remove("ativa");
-            conteudoAdicionais.style.display = "block";
-            conteudoProdutos.style.display = "none";
-        });
-
-        const btnAjudaImg = document.getElementById("btn-ajuda-img");
-        const modalAjudaImg = document.getElementById("modal-ajuda-img");
-        const fecharAjudaImg = document.getElementById("fechar-ajuda-img");
-
-        btnAjudaImg.onclick = () => modalAjudaImg.style.display = "flex";
-        fecharAjudaImg.onclick = () => modalAjudaImg.style.display = "none";
-        window.onclick = (e) => {
-            if (e.target === modalAjudaImg) modalAjudaImg.style.display = "none";
-        };
-
-        function mostrarMensagem(texto) {
-            msgSucesso.textContent = texto;
-            setTimeout(() => { msgSucesso.textContent = ""; }, 4000);
-        }
-
-        const googleProvider = new GoogleAuthProvider();
-
-        if (btnLoginGoogle) {
-            btnLoginGoogle.addEventListener("click", async () => {
-                erroLogin.textContent = "";
-                sessionStorage.setItem(CHAVE_SESSAO_DESBLOQUEADA, "true");
-                const registro = obterRegistroBiometria();
-                if (registro && registro.email) {
-                    googleProvider.setCustomParameters({ login_hint: registro.email });
-                }
-
-                try {
-                    await signInWithPopup(auth, googleProvider);
-                } catch (error) {
-                    console.error("Erro no login Google:", error);
-                    if (error.code === "auth/popup-blocked" || error.code === "auth/operation-not-supported-in-this-environment") {
-                        await signInWithRedirect(auth, googleProvider);
-                    } else {
-                        sessionStorage.removeItem(CHAVE_SESSAO_DESBLOQUEADA);
-                        erroLogin.textContent = "Erro ao autenticar com a Google: " + error.message;
-                    }
-                }
-            });
-        }
-    </script>
+    <!-- JAVASCRIPT PRINCIPAL -->
+    <script type="module" src="script.js"></script>
 </body>
+
 </html>
