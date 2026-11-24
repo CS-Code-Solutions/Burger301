@@ -267,6 +267,29 @@ body {
     }
 }
 
+/* Ajustes exclusivos para PC (tela maior que 768px):
+   - Remove conteúdo/banner sobreposto na frente do banner
+   - Remove máscara na frente do banner
+   - Ajusta o posicionamento/enquadramento do banner */
+@media (min-width: 769px) {
+    .banner-hero {
+        width: 100%;
+        min-height: 440px;
+        height: 440px;
+        padding: 0;
+        background-image: url("imagens/banner.jpg");
+        background-size: cover;
+        background-position: center center;
+        background-repeat: no-repeat;
+    }
+
+    .hero-overlay,
+    .hero-conteudo,
+    .figurinha-pedido-flutuante {
+        display: none !important;
+    }
+}
+
 /* =========================================
    AVISO FIXO DE FORA DO EXPEDIENTE
 ========================================= */
