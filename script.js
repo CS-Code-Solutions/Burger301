@@ -82,16 +82,25 @@ function configurarCliqueHamburgueresTopo() {
     const cardHamburgueres = document.getElementById("hamburgueres");
     if (!cardHamburgueres) return;
 
-    const irParaTopo = (e) => {
+    const rolarAteCardHamburgueres = (e) => {
         if (e) e.preventDefault();
         cardHamburgueres.blur();
-        window.scrollTo({ top: 0, behavior: "smooth" });
+
+        const header = document.querySelector(".header-topo");
+        const alturaHeader = header ? header.getBoundingClientRect().height : 52;
+        const margemExtra = 14;
+        const destinoY = Math.max(
+            0,
+            cardHamburgueres.getBoundingClientRect().top + window.scrollY - alturaHeader - margemExtra
+        );
+
+        window.scrollTo({ top: destinoY, behavior: "smooth" });
     };
 
-    cardHamburgueres.addEventListener("click", irParaTopo);
+    cardHamburgueres.addEventListener("click", rolarAteCardHamburgueres);
     cardHamburgueres.addEventListener("keydown", (e) => {
         if (e.key === "Enter" || e.key === " ") {
-            irParaTopo(e);
+            rolarAteCardHamburgueres(e);
         }
     });
 }
