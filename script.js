@@ -60,11 +60,18 @@ function configurarBotaoTrocaFigurinha() {
     const imgFigurinha = document.getElementById("img-figurinha-flutuante");
     if (!btnFigurinha || !imgFigurinha) return;
 
+    btnFigurinha.style.webkitTapHighlightColor = "transparent";
+    btnFigurinha.style.outline = "none";
+    btnFigurinha.style.userSelect = "none";
+    imgFigurinha.style.userSelect = "none";
+    imgFigurinha.style.webkitUserDrag = "none";
+
     imgFigurinha.src = SEQUENCIA_FIGURINHAS[indiceFigurinhaAtual];
 
     btnFigurinha.addEventListener("click", (e) => {
         e.preventDefault();
         e.stopPropagation();
+        btnFigurinha.blur();
         indiceFigurinhaAtual = (indiceFigurinhaAtual + 1) % SEQUENCIA_FIGURINHAS.length;
         imgFigurinha.src = SEQUENCIA_FIGURINHAS[indiceFigurinhaAtual];
     });
