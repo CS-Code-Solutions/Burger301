@@ -86,9 +86,9 @@
     <nav id="menu-lateral" class="menu-lateral">
         <button type="button" id="btn-fechar-menu" class="btn-fechar-menu">✕</button>
         <ul class="menu-lista">
-            <li><a href="#" onclick="fecharMenuEColar('hamburgueres')">🍔 Hambúrgueres</a></li>
-            <li><a href="#" onclick="fecharMenuEColar('porcoes')">🍟 Porções</a></li>
-            <li><a href="#" onclick="fecharMenuEColar('rodape-duvidas')">❓ Dúvidas</a></li>
+            <li><a href="#hamburgueres" onclick="fecharMenuEColar('hamburgueres', event)">🍔 Hambúrgueres</a></li>
+            <li><a href="#porcoes" onclick="fecharMenuEColar('porcoes', event)">🍟 Porções</a></li>
+            <li><a href="#rodape-duvidas" onclick="fecharMenuEColar('rodape-duvidas', event)">❓ Dúvidas</a></li>
         </ul>
     </nav>
 
@@ -116,7 +116,7 @@
         <section id="cardapio" class="cardapio">
 
             <!-- HAMBÚRGUERES -->
-            <div id="hamburgueres" class="titulo-secao" role="button" tabindex="0" aria-label="Voltar ao topo da página" style="cursor: pointer; -webkit-tap-highlight-color: transparent; outline: none; user-select: none;">
+            <div id="hamburgueres" class="titulo-secao" role="button" tabindex="0" aria-label="Rolar até Hambúrgueres" style="cursor: pointer; -webkit-tap-highlight-color: transparent; outline: none; user-select: none;">
                 <h2>🍔 Hambúrgueres</h2>
                 <p>Escolha seu hambúrguer e personalize com nossos adicionais.</p>
             </div>
