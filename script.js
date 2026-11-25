@@ -45,6 +45,32 @@ let timerCongelarBannerMobile = null;
 // Cache do primeiro quadro congelado de cada GIF para iniciar estático sem duplicar imagem
 const cachePrimeiroQuadroGif = new Map();
 
+// Sequência contínua das figurinhas flutuantes de hambúrguer
+const SEQUENCIA_FIGURINHAS = [
+    "imagens/figurinha-pedido.png",
+    "imagens/abacaxi.png",
+    "imagens/casa.png",
+    "imagens/smash.png",
+    "imagens/kids.png"
+];
+let indiceFigurinhaAtual = 0;
+
+function configurarBotaoTrocaFigurinha() {
+    const btnFigurinha = document.getElementById("btn-trocar-figurinha");
+    const imgFigurinha = document.getElementById("img-figurinha-flutuante");
+    if (!btnFigurinha || !imgFigurinha) return;
+
+    imgFigurinha.src = SEQUENCIA_FIGURINHAS[indiceFigurinhaAtual];
+
+    btnFigurinha.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        indiceFigurinhaAtual = (indiceFigurinhaAtual + 1) % SEQUENCIA_FIGURINHAS.length;
+        imgFigurinha.src = SEQUENCIA_FIGURINHAS[indiceFigurinhaAtual];
+    });
+}
+configurarBotaoTrocaFigurinha();
+
 function injetarEstiloIconePlayGif() {
     if (document.getElementById("estilo-icone-play-gif")) return;
     const style = document.createElement("style");
@@ -201,9 +227,10 @@ function iniciarAnimacaoBannerMobileUmaVez(urlGif, fallbackEstatico) {
     imgGif.src = gifComReinicio;
 }
 
-// Aplica dinamicamente o tema de Banner Mobile escolhido no Admin e adapta a proporção na tela
+// Aplica dinamicamente o tema de Banner Mobile escolhido no Admin (com imagens/banner-mobile.jpg como padrão)
 function aplicarBannerMobileDinamico(imagemBanner) {
-    const srcFinal = imagemBanner || "imagens/banner-mobile.jpg";
+    const bannerPadraoMobile = "imagens/banner-mobile.jpg";
+    const srcFinal = imagemBanner || bannerPadraoMobile;
     const imgTemp = new Image();
 
     imgTemp.onload = () => {
@@ -214,8 +241,7 @@ function aplicarBannerMobileDinamico(imagemBanner) {
             document.head.appendChild(estiloTag);
         }
 
-        const bgRule = imagemBanner ? `background-image: url("${imagemBanner}") !important;` : "";
-        estiloTag.textContent = `@media (max-width: 768px) { .banner-hero { ${bgRule} aspect-ratio: ${imgTemp.naturalWidth} / ${imgTemp.naturalHeight} !important; } }`;
+        estiloTag.textContent = `@media (max-width: 768px) { .banner-hero { background-image: url("${srcFinal}") !important; aspect-ratio: ${imgTemp.naturalWidth} / ${imgTemp.naturalHeight} !important; } }`;
 
         const gifBannerUrl = imagemBanner
             ? (imagemBanner.startsWith("data:image/gif") ? imagemBanner : obterCaminhoGifPorImagem(imagemBanner))
@@ -227,15 +253,13 @@ function aplicarBannerMobileDinamico(imagemBanner) {
     };
 
     imgTemp.onerror = () => {
-        if (imagemBanner) {
-            let estiloTag = document.getElementById("estilo-banner-mobile-dinamico");
-            if (!estiloTag) {
-                estiloTag = document.createElement("style");
-                estiloTag.id = "estilo-banner-mobile-dinamico";
-                document.head.appendChild(estiloTag);
-            }
-            estiloTag.textContent = `@media (max-width: 768px) { .banner-hero { background-image: url("${imagemBanner}") !important; } }`;
+        let estiloTag = document.getElementById("estilo-banner-mobile-dinamico");
+        if (!estiloTag) {
+            estiloTag = document.createElement("style");
+            estiloTag.id = "estilo-banner-mobile-dinamico";
+            document.head.appendChild(estiloTag);
         }
+        estiloTag.textContent = `@media (max-width: 768px) { .banner-hero { background-image: url("${srcFinal}") !important; } }`;
     };
 
     imgTemp.src = srcFinal;
