@@ -106,9 +106,21 @@
                 </div>
             </div>
 
-            <!-- BOTÃO DE FIGURINHA FLUTUANTE QUE ALTERNA ENTRE FIGURINHAS DE HAMBÚRGUER -->
+            <!-- BOTÃO DE FIGURINHA FLUTUANTE COM TEXTO CIRCULAR GIRATÓRIO -->
             <button type="button" id="btn-trocar-figurinha" class="figurinha-pedido-flutuante" aria-label="Trocar figurinha de hambúrguer" title="Clique para trocar a figurinha" style="background: transparent; border: none; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; outline: none; user-select: none;">
-                <img id="img-figurinha-flutuante" src="imagens/figurinha-pedido.png" alt="Figurinha de hambúrguer - Burger 301" style="user-select: none; -webkit-user-drag: none;">
+                <span class="figurinha-flutuante-interno">
+                    <svg class="texto-circular-svg" viewBox="0 0 140 140" aria-hidden="true">
+                        <defs>
+                            <path id="caminho-texto-figurinha" d="M 70, 70 m -54, 0 a 54,54 0 1,1 108,0 a 54,54 0 1,1 -108,0" />
+                        </defs>
+                        <text class="texto-circular-curvo">
+                            <textPath href="#caminho-texto-figurinha" startOffset="0%">
+                                O melhor Hamburgo artesanal • O melhor Hamburgo artesanal •
+                            </textPath>
+                        </text>
+                    </svg>
+                    <img id="img-figurinha-flutuante" src="imagens/figurinha-pedido.png" alt="Figurinha de hambúrguer - Burger 301" style="user-select: none; -webkit-user-drag: none;">
+                </span>
             </button>
         </section>
 
