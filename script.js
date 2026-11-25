@@ -78,6 +78,25 @@ function configurarBotaoTrocaFigurinha() {
 }
 configurarBotaoTrocaFigurinha();
 
+function configurarCliqueHamburgueresTopo() {
+    const cardHamburgueres = document.getElementById("hamburgueres");
+    if (!cardHamburgueres) return;
+
+    const irParaTopo = (e) => {
+        if (e) e.preventDefault();
+        cardHamburgueres.blur();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
+    cardHamburgueres.addEventListener("click", irParaTopo);
+    cardHamburgueres.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+            irParaTopo(e);
+        }
+    });
+}
+configurarCliqueHamburgueresTopo();
+
 function injetarEstiloIconePlayGif() {
     if (document.getElementById("estilo-icone-play-gif")) return;
     const style = document.createElement("style");
