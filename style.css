@@ -270,7 +270,7 @@ body {
 /* Ajustes exclusivos para PC (tela maior que 768px):
    - Ocupa apenas a faixa acima do cardápio (mesma largura do cardápio, sem tela de fora a fora)
    - Remove conteúdo/banner sobreposto e máscara na frente do banner
-   - Ajusta o enquadramento/altura para mostrar sem cortar */
+   - Mantém a figurinha flutuante visível no canto inferior esquerdo */
 @media (min-width: 769px) {
     .banner-hero {
         width: calc(100% - 40px);
@@ -289,9 +289,17 @@ body {
     }
 
     .hero-overlay,
-    .hero-conteudo,
-    .figurinha-pedido-flutuante {
+    .hero-conteudo {
         display: none !important;
+    }
+
+    .figurinha-pedido-flutuante {
+        display: inline-flex !important;
+        left: 18px;
+        right: auto;
+        bottom: 16px;
+        width: 104px;
+        height: 104px;
     }
 }
 
